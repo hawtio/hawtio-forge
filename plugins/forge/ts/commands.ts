@@ -6,6 +6,7 @@ module Forge {
   export var CommandsController = controller("CommandsController", ["$scope", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "ForgeApiURL",
     ($scope, $dialog, $window, $templateCache, $routeParams, $location:ng.ILocationService, localStorage, $http, $timeout, ForgeApiURL) => {
 
+      $scope.resourcePath = $routeParams["path"] || $location.search()["path"];
 
       $scope.tableConfig = {
         data: 'commands',
@@ -38,7 +39,15 @@ module Forge {
       $http.get(commandsUrl).
         success(function (data, status, headers, config) {
           if (angular.isArray(data) && status === 200) {
+            var resourcePath = $scope.resourcePath;
             $scope.commands = data.sort("name");
+            angular.forEach($scope.commands, (command) => {
+              var name = command.name;
+              if (name && resourcePath) {
+                //command.$link = "/forge/command/" + name + "/" + resourcePath;
+                command.$link = "/forge/command/" + name + "?path=" + resourcePath;
+              }
+            })
             $scope.fetched = true;
           }
         }).

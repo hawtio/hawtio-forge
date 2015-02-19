@@ -1,8 +1,8 @@
 <script type="text/ng-template" id="idTemplate.html">
   <div class="ngCellText">
-    <a href="" 
+    <a href=""
        title="Execute command {{row.entity.name}}"
-       ng-href="/forge/commands/{{row.entity.name}}">
+       ng-href="{{row.entity.$link}}">
       {{row.entity.name}}</a>
   </div>
 </script>

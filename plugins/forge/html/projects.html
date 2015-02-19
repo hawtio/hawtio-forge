@@ -1,0 +1,16 @@
+<div class="row" ng-controller="Forge.ProjectsController">
+  <div class="row">
+    <div class="col-md-12">
+      <form name="myForm">
+        Project resource: <input type="text" name="input" ng-model="resourcePath" required>
+
+        <a class="btn btn-primary" ng-href="/forge/commands?path={{resourcePath}}">Commands</a>
+      </form>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <p>You need to enter a path on your local file system to execute a Forge command</p>
+    </div>
+  </div>
+</div>

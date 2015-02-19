@@ -8,9 +8,13 @@ module Forge {
   export var route = PluginHelpers.createRoutingFunction(templatePath);
 
   _module.config(['$routeProvider', ($routeProvider:ng.route.IRouteProvider) => {
-    $routeProvider.when(UrlHelpers.join(context, '/commands'), route('commands.html', false))
-                  .when(UrlHelpers.join(context, '/commands/:id'), route('command.html', false))
-                  .when(context, { redirectTo: UrlHelpers.join(context, 'commands') });
+    $routeProvider.when(UrlHelpers.join(context, '/projects/*path'), route('projects.html', false))
+                  .when(UrlHelpers.join(context, '/projects'), route('projects.html', false))
+                  .when(UrlHelpers.join(context, '/commands'), route('commands.html', false))
+                  .when(UrlHelpers.join(context, '/commands/*path'), route('commands.html', false))
+                  .when(UrlHelpers.join(context, '/command/:id'), route('command.html', false))
+                  .when(UrlHelpers.join(context, '/command/:id/*path'), route('command.html', false))
+                  .when(context, { redirectTo: UrlHelpers.join(context, 'projects') });
   }]);
 
   // set up a promise that supplies the API URL for Forge, proxied if necessary
@@ -23,6 +27,11 @@ module Forge {
     viewRegistry['forge'] = templatePath + 'layoutForge.html';
 
     var builder = HawtioNav.builder();
+
+    var projects = builder.id('forge-projects')
+                      .href(() => UrlHelpers.join(context, 'projects'))
+                      .title(() => 'Projects')
+                      .build();
 
     var commands = builder.id('forge-commands')
                       .href(() => UrlHelpers.join(context, 'commands'))
@@ -40,7 +49,7 @@ module Forge {
                          .href(() => context)
                          .title(() => 'Forge')
                          .isValid(() => isForge(workspace))
-                         .tabs(commands)
+                         .tabs(projects, commands)
                          .build();
 
     HawtioNav.add(mainTab);

@@ -8,6 +8,8 @@ module Forge {
     ["$scope", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "ForgeApiURL",
       ($scope, $templateCache:ng.ITemplateCacheService, $location:ng.ILocationService, $routeParams, $http, $timeout, ForgeApiURL) => {
 
+        $scope.resourcePath = $routeParams["path"] || $location.search()["path"];
+
         $scope.itemConfig = {
           properties: {}
         };
@@ -20,9 +22,10 @@ module Forge {
 
         function updateData() {
           $scope.id = $routeParams["id"];
+          $scope.path = $routeParams["path"];
           $scope.item = null;
           if ($scope.id) {
-            var url = UrlHelpers.join(ForgeApiURL, "commands", $scope.id);
+            var url = UrlHelpers.join(ForgeApiURL, "commandInput", $scope.id, $scope.resourcePath);
             $http.get(url).
               success(function (data, status, headers, config) {
                 if (data) {

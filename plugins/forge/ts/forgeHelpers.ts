@@ -3,7 +3,7 @@ module Forge {
 
   export var context = '/forge';
   export var hash = '#' + context;
-  export var defaultRoute = hash + '/commands';
+  export var defaultRoute = hash + '/projects';
   export var pluginName = 'Forge';
   export var pluginPath = 'plugins/forge/';
   export var templatePath = pluginPath + 'html/';
