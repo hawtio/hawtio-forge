@@ -1,0 +1,28 @@
+<div class="row" ng-controller="Forge.CommandsController">
+  <div class="row">
+    <div class="col-md-12" ng-show="commands.length">
+      <span ng-show="!id">
+        <hawtio-filter ng-model="tableConfig.filterOptions.filterText"
+                       css-class="input-xxlarge"
+                       placeholder="Filter commands..."></hawtio-filter>
+      </span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div ng-hide="fetched">
+        <div class="align">
+          <i class="fa fa-spinner fa-spin"></i>
+        </div>
+      </div>
+      <div ng-show="fetched">
+        <div ng-hide="commands.length" class="align-center">
+          <p class="alert alert-info">There are no commands available!</p>
+        </div>
+        <div ng-show="commands.length">
+          <table class="table table-condensed table-striped" hawtio-simple-table="tableConfig"></table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

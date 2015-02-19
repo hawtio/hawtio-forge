@@ -1,0 +1,26 @@
+<div ng-controller="Forge.CommandController">
+  <div class="row">
+    <div class="col-md-12">
+      <span class="pull-right">&nbsp;</span>
+      <a class="btn btn-default pull-right"
+              href="/forge/commands"><i class="fa fa-list"></i></a>
+      <button class="btn btn-primary pull-right"
+              title="Perform this command"
+              ng-click="execute()">
+        Execute
+      </button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div ng-hide="fetched">
+        <div class="align-center">
+          <i class="fa fa-spinner fa-spin"></i>
+        </div>
+      </div>
+      <div ng-show="fetched">
+        <div hawtio-object="item" config="itemConfig"></div>
+      </div>
+    </div>
+  </div>
+</div>

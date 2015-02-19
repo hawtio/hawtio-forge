@@ -1,0 +1,57 @@
+/// <reference path="../../includes.ts"/>
+/// <reference path="forgeHelpers.ts"/>
+
+module Forge {
+
+  export var _module = angular.module(pluginName, ['hawtio-core', 'hawtio-ui', 'wiki']);
+  export var controller = PluginHelpers.createControllerFunction(_module, pluginName);
+  export var route = PluginHelpers.createRoutingFunction(templatePath);
+
+  _module.config(['$routeProvider', ($routeProvider:ng.route.IRouteProvider) => {
+    $routeProvider.when(UrlHelpers.join(context, '/commands'), route('commands.html', false))
+                  .when(UrlHelpers.join(context, '/commands/:id'), route('command.html', false))
+                  .when(context, { redirectTo: UrlHelpers.join(context, 'commands') });
+  }]);
+
+  // set up a promise that supplies the API URL for Forge, proxied if necessary
+  _module.factory('ForgeApiURL', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', (jolokiaUrl:string, jolokia:Jolokia.IJolokia, $q:ng.IQService, $rootScope:ng.IRootScopeService) => {
+    return "/api/forge"
+  }]);
+
+  _module.run(['viewRegistry', 'workspace', 'HawtioNav', (viewRegistry, workspace:Core.Workspace, HawtioNav) => {
+    log.debug("Running");
+    viewRegistry['forge'] = templatePath + 'layoutForge.html';
+
+    var builder = HawtioNav.builder();
+
+    var commands = builder.id('forge-commands')
+                      .href(() => UrlHelpers.join(context, 'commands'))
+                      .title(() => 'Command')
+                      .build();
+
+    var mainTab = builder.id('forge')
+                         .rank(100)
+                         .defaultPage({
+                           rank: 100,
+                           isValid: (yes, no) => {
+                             yes();
+                           }
+                         })
+                         .href(() => context)
+                         .title(() => 'Forge')
+                         .isValid(() => isForge(workspace))
+                         .tabs(commands)
+                         .build();
+
+    HawtioNav.add(mainTab);
+
+    // disable the images page for now...
+    var navItems = HawtioNav.items || [];
+    var dockerRegistry = navItems.find((item) => item.id === "docker-registry");
+    if (dockerRegistry) {
+      dockerRegistry.isValid = () => false;
+    }
+  }]);
+
+  hawtioPluginLoader.addModule(pluginName);
+}
