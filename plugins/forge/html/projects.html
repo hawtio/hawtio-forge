@@ -4,7 +4,7 @@
       <form name="myForm">
         Project resource: <input type="text" name="input" ng-model="resourcePath" required>
 
-        <a class="btn btn-primary" ng-href="/forge/commands?path={{resourcePath}}">Commands</a>
+        <a class="btn btn-primary" ng-href="{{commandsLink(resourcePath)}}">Commands</a>
       </form>
     </div>
   </div>

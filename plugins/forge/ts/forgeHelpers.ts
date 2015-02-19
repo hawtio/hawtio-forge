@@ -17,4 +17,20 @@ module Forge {
     return true;
   }
 
+  export function commandLink(name, resourcePath) {
+    if (name && resourcePath) {
+      //return UrlHelpers.join("/forge/command", name, resourcePath);
+      return UrlHelpers.join("/forge/command/", name) + "?path=" + resourcePath;
+    }
+    return null;
+  }
+
+  export function commandsLink(resourcePath) {
+    if (resourcePath) {
+      //return UrlHelpers.join("/forge/commands", resourcePath);
+      return "/forge/commands?path=" + resourcePath;
+    }
+    return null;
+  }
+
 }

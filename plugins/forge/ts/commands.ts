@@ -43,11 +43,8 @@ module Forge {
             $scope.commands = data.sort("name");
             angular.forEach($scope.commands, (command) => {
               var name = command.name;
-              if (name && resourcePath) {
-                //command.$link = "/forge/command/" + name + "/" + resourcePath;
-                command.$link = "/forge/command/" + name + "?path=" + resourcePath;
-              }
-            })
+              command.$link = commandLink(name, resourcePath);
+            });
             $scope.fetched = true;
           }
         }).

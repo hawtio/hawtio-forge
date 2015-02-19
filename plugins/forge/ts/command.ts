@@ -10,6 +10,7 @@ module Forge {
 
         $scope.resourcePath = $routeParams["path"] || $location.search()["path"];
 
+        $scope.commandsLink = commandsLink($scope.resourcePath);
         $scope.itemConfig = {
           properties: {}
         };

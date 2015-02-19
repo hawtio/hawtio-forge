@@ -8,4 +8,6 @@ declare module Forge {
     var log: Logging.Logger;
     var defaultIconUrl: string;
     function isForge(workspace: any): boolean;
+    function commandLink(name: any, resourcePath: any): string;
+    function commandsLink(resourcePath: any): string;
 }
