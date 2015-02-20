@@ -8,6 +8,10 @@ module Forge {
 
       $scope.model = ForgeModel;
       $scope.resourcePath = $routeParams["path"] || $location.search()["path"];
+      $scope.projectDescription = $scope.resourcePath || "";
+      if (!$scope.projectDescription.startsWith("/") && $scope.projectDescription.length > 0) {
+        $scope.projectDescription = "/" + $scope.projectDescription;
+      }
 
       $scope.commands = getModelCommands(ForgeModel, $scope.resourcePath);
       $scope.fetched = $scope.commands.length !== 0;
