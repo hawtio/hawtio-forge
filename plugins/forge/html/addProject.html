@@ -1,0 +1,28 @@
+<div class="row" ng-controller="Forge.ProjectController">
+  <div class="row">
+    <div class="col-md-12">
+      <form>
+        <div class="form-group">
+          <label for="projectFolder">Project folder</label>
+          <input type="text" class="form-control" id="projectFolder"
+                 placeholder="Enter folder path for project" title="the projects folder path"
+                 ng-model="project.path"
+                 required autofocus>
+        </div>
+<!--
+        <div class="form-group">
+            <label for="projectFile">Choose folder</label>
+            <input type="file" id="projectFile"
+                   ng-model="project.resourcePath">
+            <p class="help-block">Either type the folder path or pick the folder.</p>
+          </div>
+-->
+        <button type="submit" class="btn btn-primary"
+                ng-disabled="!project.path"
+                ng-click="save()">
+          Add Project
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

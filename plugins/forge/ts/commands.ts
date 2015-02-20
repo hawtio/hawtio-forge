@@ -34,7 +34,8 @@ module Forge {
         ]
       };
 
-      var commandsUrl = ForgeApiURL + "/commands";
+      var commandsUrl = UrlHelpers.join(ForgeApiURL, "commands", $scope.resourcePath);
+      log.info("Fetching commands from: " + $scope.resourcePath);
       $http.get(commandsUrl).
         success(function (data, status, headers, config) {
           if (angular.isArray(data) && status === 200) {

@@ -38,4 +38,11 @@ module Forge {
     }
   }
 
+  export function projectsApiUrl(ForgeApiURL) {
+    return UrlHelpers.join(ForgeApiURL, "/projects");
+  }
+
+  export function projectApiUrl(ForgeApiURL, path) {
+    return UrlHelpers.join(ForgeApiURL, "/projects", path);
+  }
 }

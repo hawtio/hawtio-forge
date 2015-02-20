@@ -8,12 +8,13 @@ module Forge {
   export var route = PluginHelpers.createRoutingFunction(templatePath);
 
   _module.config(['$routeProvider', ($routeProvider:ng.route.IRouteProvider) => {
-    $routeProvider.when(UrlHelpers.join(context, '/projects/*path'), route('projects.html', false))
+    $routeProvider.when(UrlHelpers.join(context, '/addProject'), route('addProject.html', false))
+                  .when(UrlHelpers.join(context, '/projects/:path*'), route('projects.html', false))
                   .when(UrlHelpers.join(context, '/projects'), route('projects.html', false))
                   .when(UrlHelpers.join(context, '/commands'), route('commands.html', false))
-                  .when(UrlHelpers.join(context, '/commands/*path'), route('commands.html', false))
+                  .when(UrlHelpers.join(context, '/commands/:path*'), route('commands.html', false))
                   .when(UrlHelpers.join(context, '/command/:id'), route('command.html', false))
-                  .when(UrlHelpers.join(context, '/command/:id/*path'), route('command.html', false))
+                  .when(UrlHelpers.join(context, '/command/:id/:path*'), route('command.html', false))
                   .when(context, { redirectTo: UrlHelpers.join(context, 'projects') });
   }]);
 

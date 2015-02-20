@@ -10,4 +10,6 @@ declare module Forge {
     function isForge(workspace: any): boolean;
     function commandLink(name: any, resourcePath: any): string;
     function commandsLink(resourcePath: any): string;
+    function projectsApiUrl(ForgeApiURL: any): string;
+    function projectApiUrl(ForgeApiURL: any, path: any): string;
 }
