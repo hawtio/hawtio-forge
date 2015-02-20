@@ -15,12 +15,11 @@ module Forge {
         $scope.path = $routeParams["path"];
 
         $scope.commandsLink = commandsLink($scope.resourcePath);
-        $scope.itemConfig = {
-          properties: {}
+        $scope.entity = {
         };
 
-        $scope.item = getModelCommandInputs(ForgeModel, $scope.resourcePath, $scope.id);
-        $scope.fetched = $scope.item;
+        $scope.schema = getModelCommandInputs(ForgeModel, $scope.resourcePath, $scope.id);
+        onSchemaLoad();
 
         $scope.$on('$routeUpdate', ($event) => {
           updateData();
@@ -36,8 +35,9 @@ module Forge {
               success(function (data, status, headers, config) {
                 if (data) {
                   $scope.fetched = true;
-                  $scope.item = data;
-                  setModelCommandInputs(ForgeModel, $scope.resourcePath, $scope.id, $scope.item);
+                  $scope.schema = data;
+                  setModelCommandInputs(ForgeModel, $scope.resourcePath, $scope.id, $scope.schema);
+                  onSchemaLoad();
                 }
                 Core.$apply($scope);
               }).
@@ -46,6 +46,21 @@ module Forge {
               });
           } else {
             Core.$apply($scope);
+          }
+        }
+
+        function onSchemaLoad() {
+          // lets update the value if its blank with the default values from the properties
+          var schema = $scope.schema;
+          $scope.fetched = schema;
+          var entity = $scope.entity;
+          if (schema) {
+            angular.forEach(schema.properties, (property, key) => {
+              var value = property.value;
+              if (value && !entity[key]) {
+                entity[key] = value;
+              }
+            });
           }
         }
       }]);

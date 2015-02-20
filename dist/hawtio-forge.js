@@ -148,11 +148,9 @@ var Forge;
         $scope.id = $routeParams["id"];
         $scope.path = $routeParams["path"];
         $scope.commandsLink = Forge.commandsLink($scope.resourcePath);
-        $scope.itemConfig = {
-            properties: {}
-        };
-        $scope.item = Forge.getModelCommandInputs(ForgeModel, $scope.resourcePath, $scope.id);
-        $scope.fetched = $scope.item;
+        $scope.entity = {};
+        $scope.schema = Forge.getModelCommandInputs(ForgeModel, $scope.resourcePath, $scope.id);
+        onSchemaLoad();
         $scope.$on('$routeUpdate', function ($event) {
             updateData();
         });
@@ -164,8 +162,9 @@ var Forge;
                 $http.get(url).success(function (data, status, headers, config) {
                     if (data) {
                         $scope.fetched = true;
-                        $scope.item = data;
-                        Forge.setModelCommandInputs(ForgeModel, $scope.resourcePath, $scope.id, $scope.item);
+                        $scope.schema = data;
+                        Forge.setModelCommandInputs(ForgeModel, $scope.resourcePath, $scope.id, $scope.schema);
+                        onSchemaLoad();
                     }
                     Core.$apply($scope);
                 }).error(function (data, status, headers, config) {
@@ -174,6 +173,20 @@ var Forge;
             }
             else {
                 Core.$apply($scope);
+            }
+        }
+        function onSchemaLoad() {
+            // lets update the value if its blank with the default values from the properties
+            var schema = $scope.schema;
+            $scope.fetched = schema;
+            var entity = $scope.entity;
+            if (schema) {
+                angular.forEach(schema.properties, function (property, key) {
+                    var value = property.value;
+                    if (value && !entity[key]) {
+                        entity[key] = value;
+                    }
+                });
             }
         }
     }]);
@@ -353,7 +366,7 @@ var Forge;
 })(Forge || (Forge = {}));
 
 angular.module("hawtio-forge-templates", []).run(["$templateCache", function($templateCache) {$templateCache.put("plugins/forge/html/addProject.html","<div class=\"row\" ng-controller=\"Forge.ProjectController\">\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <form>\n        <div class=\"form-group\">\n          <label for=\"projectFolder\">Project folder</label>\n          <input type=\"text\" class=\"form-control\" id=\"projectFolder\"\n                 placeholder=\"Enter folder path for project\" title=\"the projects folder path\"\n                 ng-model=\"project.path\"\n                 required autofocus>\n        </div>\n<!--\n        <div class=\"form-group\">\n            <label for=\"projectFile\">Choose folder</label>\n            <input type=\"file\" id=\"projectFile\"\n                   ng-model=\"project.resourcePath\">\n            <p class=\"help-block\">Either type the folder path or pick the folder.</p>\n          </div>\n-->\n        <button type=\"submit\" class=\"btn btn-primary\"\n                ng-disabled=\"!project.path\"\n                ng-click=\"save()\">\n          Add Project\n        </button>\n      </form>\n    </div>\n  </div>\n</div>\n");
-$templateCache.put("plugins/forge/html/command.html","<div ng-controller=\"Forge.CommandController\">\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <span class=\"pull-right\">&nbsp;</span>\n      <a class=\"btn btn-default pull-right\"\n              href=\"{{commandsLink}}\"><i class=\"fa fa-list\"></i></a>\n      <button class=\"btn btn-primary pull-right\"\n              title=\"Perform this command\"\n              ng-click=\"execute()\">\n        Execute\n      </button>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"fetched\">\n        <div class=\"align-center\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"fetched\">\n        <div hawtio-object=\"item\" config=\"itemConfig\"></div>\n      </div>\n    </div>\n  </div>\n</div>\n");
+$templateCache.put("plugins/forge/html/command.html","<div ng-controller=\"Forge.CommandController\">\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <span class=\"pull-right\">&nbsp;</span>\n      <a class=\"btn btn-default pull-right\"\n              href=\"{{commandsLink}}\"><i class=\"fa fa-list\"></i></a>\n      <button class=\"btn btn-primary pull-right\"\n              title=\"Perform this command\"\n              ng-click=\"execute()\">\n        Execute\n      </button>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <h3>{{schema.info.description}}</h3>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"fetched\">\n        <div class=\"align-center\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"fetched\">\n        <div simple-form name=\"commandForm\" mode=\'edit\' entity=\'entity\' data=\'schema\'></div>\n      </div>\n    </div>\n  </div>\n</div>\n");
 $templateCache.put("plugins/forge/html/commands.html","<div class=\"row\" ng-controller=\"Forge.CommandsController\">\n  <div class=\"row\">\n    <div class=\"col-md-12\" ng-show=\"commands.length\">\n      <span ng-show=\"!id\">\n        Command: <hawtio-filter ng-model=\"tableConfig.filterOptions.filterText\"\n                       css-class=\"input-xxlarge\"\n                       placeholder=\"Filter commands...\"></hawtio-filter>\n      </span>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"fetched\">\n        <div class=\"align\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"fetched\">\n        <div ng-hide=\"commands.length\" class=\"align-center\">\n          <p class=\"alert alert-info\">There are no commands available!</p>\n        </div>\n        <div ng-show=\"commands.length\">\n          <table class=\"table table-condensed table-striped\" hawtio-simple-table=\"tableConfig\"></table>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n");
 $templateCache.put("plugins/forge/html/layoutForge.html","<script type=\"text/ng-template\" id=\"idTemplate.html\">\n  <div class=\"ngCellText\">\n    <a href=\"\"\n       title=\"Execute command {{row.entity.name}}\"\n       ng-href=\"{{row.entity.$link}}\">\n      {{row.entity.name}}</a>\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"projectTemplate.html\">\n  <div class=\"ngCellText\">\n    <a href=\"\"\n       title=\"Commands for project {{row.entity.path}}\"\n       ng-href=\"{{row.entity.$commandsLink}}\">\n      {{row.entity.path}}</a>\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"categoryTemplate.html\">\n  <div class=\"ngCellText\">\n    <span class=\"pod-label badge\"\n          class=\"background-light-grey mouse-pointer\">{{row.entity.category}}</span>\n  </div>\n</script>\n\n<div class=\"row\">\n  <div class=\"wiki-icon-view\">\n    <div class=\"row forge-view\" ng-view></div>\n  </div>\n</div>\n");
 $templateCache.put("plugins/forge/html/projects.html","<div class=\"row\" ng-controller=\"Forge.ProjectsController\">\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <hawtio-filter ng-model=\"tableConfig.filterOptions.filterText\"\n                     ng-show=\"projects.length\"\n                     css-class=\"input-xxlarge\"\n                     placeholder=\"Filter projects...\"></hawtio-filter>\n      <button class=\"btn btn-primary pull-right\"\n              ng-click=\"openCommands()\">\n        Commands\n      </button>\n      <span class=\"pull-right\">&nbsp;</span>\n      <button ng-show=\"fetched\"\n              class=\"btn btn-danger pull-right\"\n              ng-disabled=\"tableConfig.selectedItems.length == 0\"\n              ng-click=\"delete(tableConfig.selectedItems)\">\n        <i class=\"fa fa-remove\"></i> Delete\n      </button>\n      <span class=\"pull-right\">&nbsp;</span>\n      <a class=\"btn btn-default pull-right\" href=\"/forge/addProject\">\n        <i class=\"fa fa-plus\"></i> Add Project\n      </a>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"fetched\">\n        <div class=\"align\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"fetched\">\n        <div ng-hide=\"projects.length\" class=\"align-center\">\n          <p class=\"alert alert-info\">There are no projects available!</p>\n        </div>\n        <div ng-show=\"projects.length\">\n          <table class=\"table table-condensed table-striped\" hawtio-simple-table=\"tableConfig\"></table>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n");}]); hawtioPluginLoader.addModule("hawtio-forge-templates");
