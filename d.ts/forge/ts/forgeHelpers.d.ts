@@ -12,6 +12,8 @@ declare module Forge {
     function commandsLink(resourcePath: any): string;
     function projectsApiUrl(ForgeApiURL: any): string;
     function projectApiUrl(ForgeApiURL: any, path: any): string;
+    function commandApiUrl(ForgeApiURL: any, commandId: any, resourcePath?: any): string;
+    function commandInputApiUrl(ForgeApiURL: any, commandId: any, resourcePath: any): string;
     function setModelCommands(ForgeModel: any, resourcePath: any, commands: any): void;
     function getModelCommands(ForgeModel: any, resourcePath: any): any;
     function getModelCommandInputs(ForgeModel: any, resourcePath: any, id: any): any;

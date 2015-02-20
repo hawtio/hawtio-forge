@@ -25,12 +25,52 @@ module Forge {
           updateData();
         });
 
+        $scope.execute = () => {
+          // TODO if valid...
+
+          $scope.response = null;
+          var commandId = $scope.id;
+          var resourcePath = $scope.resourcePath;
+          var url = commandApiUrl(ForgeApiURL, commandId);
+          var request = {
+            resource: resourcePath,
+            inputs: $scope.entity
+          };
+          log.info("About to post to " + url + " payload: " + angular.toJson(request));
+          $http.post(url, request).
+            success(function (data, status, headers, config) {
+              if (data) {
+                data.message = data.message || data.output;
+              }
+              $scope.response = data;
+              var status = ((data || {}).status || "").toString().toLowerCase();
+              $scope.responseClass = toBackgroundStyle(status);
+
+              Core.$apply($scope);
+            }).
+            error(function (data, status, headers, config) {
+              log.warn("Failed to load " + url + " " + data + " " + status);
+            });
+        };
+
         updateData();
+
+        function toBackgroundStyle(status) {
+          if (!status) {
+            status = "";
+          }
+          if (status.startsWith("suc")) {
+            return "bg-success";
+          }
+          return "bg-warning"
+        }
 
         function updateData() {
           $scope.item = null;
-          if ($scope.id) {
-            var url = UrlHelpers.join(ForgeApiURL, "commandInput", $scope.id, $scope.resourcePath);
+          var commandId = $scope.id;
+          if (commandId) {
+            var resourcePath = $scope.resourcePath;
+            var url = commandInputApiUrl(ForgeApiURL, commandId, resourcePath);
             $http.get(url).
               success(function (data, status, headers, config) {
                 if (data) {

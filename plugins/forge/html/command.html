@@ -16,6 +16,14 @@
       <h3>{{schema.info.description}}</h3>
     </div>
   </div>
+  <div class="row" ng-show="response">
+    <div class="col-md-12">
+      <p ng-class="responseClass">{{response.message}}</p>
+
+      <a class="btn btn-primary" href="{{commandsLink}}">Done</a>
+      <a class="btn btn-default" ng-click="response = null">Hide</a>
+    </div>
+  </div>
   <div class="row">
     <div class="col-md-12">
       <div ng-hide="fetched">

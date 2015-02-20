@@ -43,6 +43,15 @@ module Forge {
     return UrlHelpers.join(ForgeApiURL, "/projects", path);
   }
 
+  export function commandApiUrl(ForgeApiURL, commandId, resourcePath = null) {
+    return UrlHelpers.join(ForgeApiURL, "command", commandId, resourcePath);
+  }
+
+  export function commandInputApiUrl(ForgeApiURL, commandId, resourcePath) {
+    return UrlHelpers.join(ForgeApiURL, "commandInput", commandId, resourcePath);
+  }
+
+
 
   /**
    * Returns the project for the given resource path
