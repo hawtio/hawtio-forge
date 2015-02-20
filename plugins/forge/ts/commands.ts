@@ -21,7 +21,6 @@ module Forge {
           {
             field: 'name',
             displayName: 'Name',
-            defaultSort: true,
             cellTemplate: $templateCache.get("idTemplate.html")
           },
           {
@@ -40,7 +39,7 @@ module Forge {
         success(function (data, status, headers, config) {
           if (angular.isArray(data) && status === 200) {
             var resourcePath = $scope.resourcePath;
-            $scope.commands = data.sort("name");
+            $scope.commands = _.sortBy(data, "name");
             angular.forEach($scope.commands, (command) => {
               var name = command.name;
               command.$link = commandLink(name, resourcePath);

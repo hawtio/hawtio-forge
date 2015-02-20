@@ -18,9 +18,13 @@ module Forge {
   }
 
   export function commandLink(name, resourcePath) {
-    if (name && resourcePath) {
-      //return UrlHelpers.join("/forge/command", name, resourcePath);
-      return UrlHelpers.join("/forge/command/", name) + "?path=" + resourcePath;
+    if (name) {
+      if (resourcePath) {
+        //return UrlHelpers.join("/forge/command", name, resourcePath);
+        return UrlHelpers.join("/forge/command/", name) + "?path=" + resourcePath;
+      } else {
+        return UrlHelpers.join("/forge/command/", name);
+      }
     }
     return null;
   }
@@ -29,8 +33,9 @@ module Forge {
     if (resourcePath) {
       //return UrlHelpers.join("/forge/commands", resourcePath);
       return "/forge/commands?path=" + resourcePath;
+    } else {
+      return "/forge/commands";
     }
-    return null;
   }
 
 }
