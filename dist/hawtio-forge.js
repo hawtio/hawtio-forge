@@ -21,8 +21,7 @@ var Forge;
     function commandLink(name, resourcePath) {
         if (name) {
             if (resourcePath) {
-                //return UrlHelpers.join("/forge/command", name, resourcePath);
-                return UrlHelpers.join("/forge/command/", name) + "?path=" + resourcePath;
+                return UrlHelpers.join("/forge/command", name, resourcePath);
             }
             else {
                 return UrlHelpers.join("/forge/command/", name);
@@ -33,8 +32,7 @@ var Forge;
     Forge.commandLink = commandLink;
     function commandsLink(resourcePath) {
         if (resourcePath) {
-            //return UrlHelpers.join("/forge/commands", resourcePath);
-            return "/forge/commands?path=" + resourcePath;
+            return UrlHelpers.join("/forge/commands", resourcePath);
         }
         else {
             return "/forge/commands";
@@ -157,9 +155,9 @@ var Forge;
                 }
             ]
         };
-        var commandsUrl = UrlHelpers.join(ForgeApiURL, "commands", $scope.resourcePath);
-        Forge.log.info("Fetching commands from: " + $scope.resourcePath);
-        $http.get(commandsUrl).success(function (data, status, headers, config) {
+        var url = UrlHelpers.join(ForgeApiURL, "commands", $scope.resourcePath);
+        Forge.log.info("Fetching commands from: " + url);
+        $http.get(url).success(function (data, status, headers, config) {
             if (angular.isArray(data) && status === 200) {
                 var resourcePath = $scope.resourcePath;
                 $scope.commands = _.sortBy(data, "name");
@@ -170,7 +168,7 @@ var Forge;
                 $scope.fetched = true;
             }
         }).error(function (data, status, headers, config) {
-            Forge.log.warn("failed to load " + commandsUrl + ". status: " + status + " data: " + data);
+            Forge.log.warn("failed to load " + url + ". status: " + status + " data: " + data);
         });
     }]);
 })(Forge || (Forge = {}));
@@ -229,6 +227,16 @@ var Forge;
                     cellTemplate: $templateCache.get("projectTemplate.html")
                 }
             ]
+        };
+        $scope.openCommands = function () {
+            var resourcePath = null;
+            var selected = $scope.tableConfig.selectedItems;
+            if (_.isArray(selected) && selected.length) {
+                resourcePath = selected[0].path;
+            }
+            var link = Forge.commandsLink(resourcePath);
+            Forge.log.info("moving to commands link: " + link);
+            $location.path(link);
         };
         $scope.delete = function (projects) {
             UI.multiItemConfirmActionDialog({

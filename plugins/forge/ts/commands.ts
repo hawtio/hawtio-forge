@@ -34,9 +34,9 @@ module Forge {
         ]
       };
 
-      var commandsUrl = UrlHelpers.join(ForgeApiURL, "commands", $scope.resourcePath);
-      log.info("Fetching commands from: " + $scope.resourcePath);
-      $http.get(commandsUrl).
+      var url = UrlHelpers.join(ForgeApiURL, "commands", $scope.resourcePath);
+      log.info("Fetching commands from: " + url);
+      $http.get(url).
         success(function (data, status, headers, config) {
           if (angular.isArray(data) && status === 200) {
             var resourcePath = $scope.resourcePath;
@@ -49,7 +49,7 @@ module Forge {
           }
         }).
         error(function (data, status, headers, config) {
-          log.warn("failed to load " + commandsUrl + ". status: " + status + " data: " + data);
+          log.warn("failed to load " + url + ". status: " + status + " data: " + data);
         });
 
     }]);

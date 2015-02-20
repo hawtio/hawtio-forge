@@ -27,6 +27,17 @@ module Forge {
         ]
       };
 
+      $scope.openCommands = () => {
+        var resourcePath = null;
+        var selected = $scope.tableConfig.selectedItems;
+        if (_.isArray(selected) && selected.length) {
+          resourcePath = selected[0].path;
+        }
+        var link = commandsLink(resourcePath);
+        log.info("moving to commands link: " + link);
+        $location.path(link);
+      };
+
       $scope.delete = (projects) => {
         UI.multiItemConfirmActionDialog(<UI.MultiItemConfirmActionOptions>{
           collection: projects,
