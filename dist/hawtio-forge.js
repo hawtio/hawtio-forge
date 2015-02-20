@@ -276,7 +276,7 @@ var Forge;
                 var resourcePath = $scope.resourcePath;
                 $scope.commands = _.sortBy(data, "name");
                 angular.forEach($scope.commands, function (command) {
-                    var name = command.name;
+                    var name = command.id || command.name;
                     command.$link = Forge.commandLink(name, resourcePath);
                 });
                 Forge.setModelCommands($scope.model, $scope.resourcePath, $scope.commands);
