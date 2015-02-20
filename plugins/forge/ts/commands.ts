@@ -3,10 +3,14 @@
 
 module Forge {
 
-  export var CommandsController = controller("CommandsController", ["$scope", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "ForgeApiURL",
-    ($scope, $dialog, $window, $templateCache, $routeParams, $location:ng.ILocationService, localStorage, $http, $timeout, ForgeApiURL) => {
+  export var CommandsController = controller("CommandsController", ["$scope", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "ForgeApiURL", "ForgeModel",
+    ($scope, $dialog, $window, $templateCache, $routeParams, $location:ng.ILocationService, localStorage, $http, $timeout, ForgeApiURL, ForgeModel) => {
 
+      $scope.model = ForgeModel;
       $scope.resourcePath = $routeParams["path"] || $location.search()["path"];
+
+      $scope.commands = getModelCommands(ForgeModel, $scope.resourcePath);
+      $scope.fetched = $scope.commands.length !== 0;
 
       $scope.tableConfig = {
         data: 'commands',
@@ -45,6 +49,7 @@ module Forge {
               var name = command.name;
               command.$link = commandLink(name, resourcePath);
             });
+            setModelCommands($scope.model, $scope.resourcePath, $scope.commands);
             $scope.fetched = true;
           }
         }).

@@ -23,6 +23,15 @@ module Forge {
     return "/api/forge"
   }]);
 
+  _module.factory('ForgeModel', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', (jolokiaUrl:string, jolokia:Jolokia.IJolokia, $q:ng.IQService, $rootScope:ng.IRootScopeService) => {
+    return {
+      rootProject: {
+
+      },
+      projects: []
+    }
+  }]);
+
   _module.run(['viewRegistry', 'workspace', 'HawtioNav', (viewRegistry, workspace:Core.Workspace, HawtioNav) => {
     log.debug("Running");
     viewRegistry['forge'] = templatePath + 'layoutForge.html';

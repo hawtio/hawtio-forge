@@ -47,6 +47,51 @@ var Forge;
         return UrlHelpers.join(ForgeApiURL, "/projects", path);
     }
     Forge.projectApiUrl = projectApiUrl;
+    /**
+     * Returns the project for the given resource path
+     */
+    function modelProject(ForgeModel, resourcePath) {
+        if (resourcePath) {
+            var project = ForgeModel.projects[resourcePath];
+            if (!project) {
+                project = {};
+                ForgeModel.projects[resourcePath] = project;
+            }
+            return project;
+        }
+        else {
+            return ForgeModel.rootProject;
+        }
+    }
+    function setModelCommands(ForgeModel, resourcePath, commands) {
+        var project = modelProject(ForgeModel, resourcePath);
+        project.$commands = commands;
+    }
+    Forge.setModelCommands = setModelCommands;
+    function getModelCommands(ForgeModel, resourcePath) {
+        var project = modelProject(ForgeModel, resourcePath);
+        return project.$commands || [];
+    }
+    Forge.getModelCommands = getModelCommands;
+    function modelCommandInputMap(ForgeModel, resourcePath) {
+        var project = modelProject(ForgeModel, resourcePath);
+        var commandInputs = project.$commandInputs;
+        if (!commandInputs) {
+            commandInputs = {};
+            project.$commandInputs = commandInputs;
+        }
+        return commandInputs;
+    }
+    function getModelCommandInputs(ForgeModel, resourcePath, id) {
+        var commandInputs = modelCommandInputMap(ForgeModel, resourcePath);
+        return commandInputs[id];
+    }
+    Forge.getModelCommandInputs = getModelCommandInputs;
+    function setModelCommandInputs(ForgeModel, resourcePath, id, item) {
+        var commandInputs = modelCommandInputMap(ForgeModel, resourcePath);
+        return commandInputs[id] = item;
+    }
+    Forge.setModelCommandInputs = setModelCommandInputs;
 })(Forge || (Forge = {}));
 
 /// <reference path="../../includes.ts"/>
@@ -62,6 +107,12 @@ var Forge;
     // set up a promise that supplies the API URL for Forge, proxied if necessary
     Forge._module.factory('ForgeApiURL', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', function (jolokiaUrl, jolokia, $q, $rootScope) {
         return "/api/forge";
+    }]);
+    Forge._module.factory('ForgeModel', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', function (jolokiaUrl, jolokia, $q, $rootScope) {
+        return {
+            rootProject: {},
+            projects: []
+        };
     }]);
     Forge._module.run(['viewRegistry', 'workspace', 'HawtioNav', function (viewRegistry, workspace, HawtioNav) {
         Forge.log.debug("Running");
@@ -91,19 +142,22 @@ var Forge;
 /// <reference path="forgePlugin.ts"/>
 var Forge;
 (function (Forge) {
-    Forge.CommandController = Forge.controller("CommandController", ["$scope", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "ForgeApiURL", function ($scope, $templateCache, $location, $routeParams, $http, $timeout, ForgeApiURL) {
+    Forge.CommandController = Forge.controller("CommandController", ["$scope", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "ForgeApiURL", "ForgeModel", function ($scope, $templateCache, $location, $routeParams, $http, $timeout, ForgeApiURL, ForgeModel) {
+        $scope.model = ForgeModel;
         $scope.resourcePath = $routeParams["path"] || $location.search()["path"];
+        $scope.id = $routeParams["id"];
+        $scope.path = $routeParams["path"];
         $scope.commandsLink = Forge.commandsLink($scope.resourcePath);
         $scope.itemConfig = {
             properties: {}
         };
+        $scope.item = Forge.getModelCommandInputs(ForgeModel, $scope.resourcePath, $scope.id);
+        $scope.fetched = $scope.item;
         $scope.$on('$routeUpdate', function ($event) {
             updateData();
         });
         updateData();
         function updateData() {
-            $scope.id = $routeParams["id"];
-            $scope.path = $routeParams["path"];
             $scope.item = null;
             if ($scope.id) {
                 var url = UrlHelpers.join(ForgeApiURL, "commandInput", $scope.id, $scope.resourcePath);
@@ -111,6 +165,7 @@ var Forge;
                     if (data) {
                         $scope.fetched = true;
                         $scope.item = data;
+                        Forge.setModelCommandInputs(ForgeModel, $scope.resourcePath, $scope.id, $scope.item);
                     }
                     Core.$apply($scope);
                 }).error(function (data, status, headers, config) {
@@ -128,8 +183,11 @@ var Forge;
 /// <reference path="forgePlugin.ts"/>
 var Forge;
 (function (Forge) {
-    Forge.CommandsController = Forge.controller("CommandsController", ["$scope", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "ForgeApiURL", function ($scope, $dialog, $window, $templateCache, $routeParams, $location, localStorage, $http, $timeout, ForgeApiURL) {
+    Forge.CommandsController = Forge.controller("CommandsController", ["$scope", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "ForgeApiURL", "ForgeModel", function ($scope, $dialog, $window, $templateCache, $routeParams, $location, localStorage, $http, $timeout, ForgeApiURL, ForgeModel) {
+        $scope.model = ForgeModel;
         $scope.resourcePath = $routeParams["path"] || $location.search()["path"];
+        $scope.commands = Forge.getModelCommands(ForgeModel, $scope.resourcePath);
+        $scope.fetched = $scope.commands.length !== 0;
         $scope.tableConfig = {
             data: 'commands',
             showSelectionCheckbox: true,
@@ -165,6 +223,7 @@ var Forge;
                     var name = command.name;
                     command.$link = Forge.commandLink(name, resourcePath);
                 });
+                Forge.setModelCommands($scope.model, $scope.resourcePath, $scope.commands);
                 $scope.fetched = true;
             }
         }).error(function (data, status, headers, config) {
