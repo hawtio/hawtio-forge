@@ -16,6 +16,13 @@
       <h3>{{schema.info.description}}</h3>
     </div>
   </div>
+  <div class="row" ng-show="executing">
+    <div class="col-md-12">
+      <p class="bg-info">executing command...
+        <i class="fa fa-spinner fa-spin"></i>
+      </p>
+    </div>
+  </div>
   <div class="row" ng-show="response">
     <div class="col-md-12">
       <p ng-show="response.message" ng-class="responseClass"><span class="response-message">{{response.message}}</span></p>

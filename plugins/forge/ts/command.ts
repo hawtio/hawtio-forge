@@ -29,6 +29,7 @@ module Forge {
           // TODO if valid...
 
           $scope.response = null;
+          $scope.executing = true;
           var commandId = $scope.id;
           var resourcePath = $scope.resourcePath;
           var url = executeCommandApiUrl(ForgeApiURL, commandId);
@@ -39,6 +40,7 @@ module Forge {
           log.info("About to post to " + url + " payload: " + angular.toJson(request));
           $http.post(url, request).
             success(function (data, status, headers, config) {
+              $scope.executing = false;
               if (data) {
                 data.message = data.message || data.output;
               }
@@ -49,6 +51,7 @@ module Forge {
               Core.$apply($scope);
             }).
             error(function (data, status, headers, config) {
+              $scope.executing = false;
               log.warn("Failed to load " + url + " " + data + " " + status);
             });
         };
