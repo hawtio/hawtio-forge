@@ -31,7 +31,7 @@ module Forge {
           $scope.response = null;
           var commandId = $scope.id;
           var resourcePath = $scope.resourcePath;
-          var url = commandApiUrl(ForgeApiURL, commandId);
+          var url = executeCommandApiUrl(ForgeApiURL, commandId);
           var request = {
             resource: resourcePath,
             inputs: $scope.entity

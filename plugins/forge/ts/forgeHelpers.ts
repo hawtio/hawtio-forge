@@ -47,6 +47,14 @@ module Forge {
     return UrlHelpers.join(ForgeApiURL, "command", commandId, resourcePath);
   }
 
+  export function executeCommandApiUrl(ForgeApiURL, commandId) {
+    return UrlHelpers.join(ForgeApiURL, "command", "execute", commandId);
+  }
+
+  export function validateCommandApiUrl(ForgeApiURL, commandId) {
+    return UrlHelpers.join(ForgeApiURL, "command", "validate", commandId);
+  }
+
   export function commandInputApiUrl(ForgeApiURL, commandId, resourcePath) {
     return UrlHelpers.join(ForgeApiURL, "commandInput", commandId, resourcePath);
   }

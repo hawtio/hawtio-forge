@@ -18,7 +18,9 @@
   </div>
   <div class="row" ng-show="response">
     <div class="col-md-12">
-      <p ng-class="responseClass">{{response.message}}</p>
+      <p ng-show="response.message" ng-class="responseClass"><span class="response-message">{{response.message}}</span></p>
+      <p ng-show="response.output" ng-class="responseClass"><span class="response-output">{{response.output}}</span></p>
+      <p ng-show="response.err" ng-class="bg-warning"><span class="response-err">{{response.err}}</span></p>
 
       <a class="btn btn-primary" href="{{commandsLink}}">Done</a>
       <a class="btn btn-default" ng-click="response = null">Hide</a>
