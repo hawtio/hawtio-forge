@@ -40,7 +40,7 @@
           <i class="fa fa-spinner fa-spin"></i>
         </div>
       </div>
-      <div ng-show="fetched">
+      <div ng-show="fetched && !wizardCompleted">
         <div simple-form name="commandForm" mode='edit' entity='entity' data='schema'></div>
       </div>
     </div>

@@ -53,10 +53,13 @@ module Forge {
                       $scope.entity = {};
                       $scope.inputList.push($scope.entity);
 
-                      // for now lets clear the response as we're a wizard next page
-                      // TODO clear the response data if we are not the final
-                      // otherwise redirect to the commands page?
-                      //data = null;
+                      if (data.canMoveToNextStep) {
+                        // lets clear the response we've another wizard page to do
+                        data = null;
+                      } else {
+                        // otherwise indicate that the wizard just completed and lets hide the input form
+                        $scope.wizardCompleted = true;
+                      }
                     }
                   }
                 }
