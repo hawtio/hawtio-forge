@@ -17,6 +17,7 @@ module Forge {
         $scope.commandsLink = commandsLink($scope.resourcePath);
         $scope.entity = {
         };
+        $scope.inputList = [$scope.entity];
 
         $scope.schema = getModelCommandInputs(ForgeModel, $scope.resourcePath, $scope.id);
         onSchemaLoad();
@@ -26,8 +27,7 @@ module Forge {
         });
 
         $scope.execute = () => {
-          // TODO if valid...
-
+          // TODO check if valid...
           $scope.response = null;
           $scope.executing = true;
           var commandId = $scope.id;
@@ -35,7 +35,7 @@ module Forge {
           var url = executeCommandApiUrl(ForgeApiURL, commandId);
           var request = {
             resource: resourcePath,
-            inputs: $scope.entity
+            inputList: $scope.inputList
           };
           log.info("About to post to " + url + " payload: " + angular.toJson(request));
           $http.post(url, request).
@@ -43,6 +43,23 @@ module Forge {
               $scope.executing = false;
               if (data) {
                 data.message = data.message || data.output;
+                var wizardResults = data.wizardResults;
+                if (wizardResults) {
+                  var stepInputs = wizardResults.stepInputs;
+                  if (stepInputs) {
+                    var schema = _.last(stepInputs);
+                    if (schema) {
+                      $scope.schema = schema;
+                      $scope.entity = {};
+                      $scope.inputList.push($scope.entity);
+
+                      // for now lets clear the response as we're a wizard next page
+                      // TODO clear the response data if we are not the final
+                      // otherwise redirect to the commands page?
+                      //data = null;
+                    }
+                  }
+                }
               }
               $scope.response = data;
               var status = ((data || {}).status || "").toString().toLowerCase();

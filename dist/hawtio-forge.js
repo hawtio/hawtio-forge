@@ -166,13 +166,14 @@ var Forge;
         $scope.path = $routeParams["path"];
         $scope.commandsLink = Forge.commandsLink($scope.resourcePath);
         $scope.entity = {};
+        $scope.inputList = [$scope.entity];
         $scope.schema = Forge.getModelCommandInputs(ForgeModel, $scope.resourcePath, $scope.id);
         onSchemaLoad();
         $scope.$on('$routeUpdate', function ($event) {
             updateData();
         });
         $scope.execute = function () {
-            // TODO if valid...
+            // TODO check if valid...
             $scope.response = null;
             $scope.executing = true;
             var commandId = $scope.id;
@@ -180,13 +181,25 @@ var Forge;
             var url = Forge.executeCommandApiUrl(ForgeApiURL, commandId);
             var request = {
                 resource: resourcePath,
-                inputs: $scope.entity
+                inputList: $scope.inputList
             };
             Forge.log.info("About to post to " + url + " payload: " + angular.toJson(request));
             $http.post(url, request).success(function (data, status, headers, config) {
                 $scope.executing = false;
                 if (data) {
                     data.message = data.message || data.output;
+                    var wizardResults = data.wizardResults;
+                    if (wizardResults) {
+                        var stepInputs = wizardResults.stepInputs;
+                        if (stepInputs) {
+                            var schema = _.last(stepInputs);
+                            if (schema) {
+                                $scope.schema = schema;
+                                $scope.entity = {};
+                                $scope.inputList.push($scope.entity);
+                            }
+                        }
+                    }
                 }
                 $scope.response = data;
                 var status = ((data || {}).status || "").toString().toLowerCase();
