@@ -135,7 +135,7 @@ gulp.task('connect', ['watch'], function() {
 
   var localProxies = [{
         proto: "http",
-        port: "8588",
+        port: "8599",
         hostname: "localhost",
         path: '/api',
         targetPath: "/api"
