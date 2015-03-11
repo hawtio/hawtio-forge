@@ -196,6 +196,7 @@ var Forge;
                             if (schema) {
                                 $scope.schema = schema;
                                 $scope.entity = {};
+                                console.log("got execution results with inputList - about to push...: " + angular.toJson($scope.inputList));
                                 $scope.inputList.push($scope.entity);
                                 if (data.canMoveToNextStep) {
                                     // lets clear the response we've another wizard page to do
@@ -218,6 +219,44 @@ var Forge;
                 Forge.log.warn("Failed to load " + url + " " + data + " " + status);
             });
         };
+        $scope.$watchCollection("entity", function () {
+            console.log("Model changed so validating....");
+            validate();
+        });
+        function validate() {
+            if ($scope.executing) {
+                return;
+            }
+            var commandId = $scope.id;
+            var resourcePath = $scope.resourcePath;
+            var url = Forge.validateCommandApiUrl(ForgeApiURL, commandId);
+            // lets put the entity in the last item in the list
+            var inputList = [].concat($scope.inputList);
+            inputList[inputList.length - 1] = $scope.entity;
+            var request = {
+                resource: resourcePath,
+                inputList: $scope.inputList
+            };
+            Forge.log.info("About to post to " + url + " payload: " + angular.toJson(request));
+            $http.post(url, request).success(function (data, status, headers, config) {
+                this.validation = data;
+                console.log("got validation " + angular.toJson(data, true));
+                var wizardResults = data.wizardResults;
+                if (wizardResults) {
+                    var stepInputs = wizardResults.stepInputs;
+                    if (stepInputs) {
+                        var schema = _.last(stepInputs);
+                        if (schema) {
+                            $scope.schema = schema;
+                        }
+                    }
+                }
+                Core.$apply($scope);
+            }).error(function (data, status, headers, config) {
+                $scope.executing = false;
+                Forge.log.warn("Failed to load " + url + " " + data + " " + status);
+            });
+        }
         updateData();
         function toBackgroundStyle(status) {
             if (!status) {
