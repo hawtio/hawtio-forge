@@ -49,9 +49,8 @@ module Forge {
                   if (stepInputs) {
                     var schema = _.last(stepInputs);
                     if (schema) {
-                      $scope.schema = schema;
+                      updateSchema(schema);
                       $scope.entity = {};
-                      console.log("got execution results with inputList - about to push...: " + angular.toJson($scope.inputList));
                       $scope.inputList.push($scope.entity);
 
                       if (data.canMoveToNextStep) {
@@ -78,13 +77,40 @@ module Forge {
         };
 
         $scope.$watchCollection("entity", () => {
-          console.log("Model changed so validating....");
           validate();
         });
 
+        function updateSchema(schema) {
+          if (schema) {
+            // lets remove the values so that we can properly check when the schema really does change
+            // otherwise the schema will change every time we type a character ;)
+            var schemaWithoutValues = angular.copy(schema);
+            angular.forEach(schemaWithoutValues.properties, (property) => {
+              delete property["value"];
+              delete property["enabled"];
+            });
+            var json = angular.toJson(schemaWithoutValues);
+            if (json !== $scope.previousSchemaJson) {
+/*
+              console.log("updating schema");
+              console.log("old: " + $scope.previousSchemaJson);
+              console.log("new: " + json);
+*/
+              $scope.previousSchemaJson = json;
+              $scope.schema = schema;
+            }
+          }
+        }
+
         function validate() {
-          if ($scope.executing) {
+          if ($scope.executing || $scope.validating) {
             return;
+          }
+          var newJson = angular.toJson($scope.entity);
+          if (newJson === $scope.validatedEntityJson) {
+            return;
+          } else {
+            $scope.validatedEntityJson = newJson;
           }
           var commandId = $scope.id;
           var resourcePath = $scope.resourcePath;
@@ -96,29 +122,36 @@ module Forge {
             resource: resourcePath,
             inputList: $scope.inputList
           };
-          log.info("About to post to " + url + " payload: " + angular.toJson(request));
+          //log.info("About to post to " + url + " payload: " + angular.toJson(request));
+          $scope.validating = true;
           $http.post(url, request).
             success(function (data, status, headers, config) {
               this.validation = data;
-              console.log("got validation " + angular.toJson(data, true));
+              //console.log("got validation " + angular.toJson(data, true));
               var wizardResults = data.wizardResults;
               if (wizardResults) {
                 var stepInputs = wizardResults.stepInputs;
                 if (stepInputs) {
                   var schema = _.last(stepInputs);
-                  if (schema) {
-                    $scope.schema = schema;
-                  }
+                  updateSchema(schema);
                 }
               }
               Core.$apply($scope);
+
+              /*
+               * Lets throttle the validations so that we only fire another validation a little
+               * after we've got a reply and only if the model has changed since then
+               */
+              $timeout(() => {
+                $scope.validating = false;
+                validate();
+              }, 200);
             }).
             error(function (data, status, headers, config) {
               $scope.executing = false;
               log.warn("Failed to load " + url + " " + data + " " + status);
             });
         }
-
 
         updateData();
 
@@ -142,7 +175,8 @@ module Forge {
               success(function (data, status, headers, config) {
                 if (data) {
                   $scope.fetched = true;
-                  $scope.schema = data;
+                  console.log("updateData loaded schema");
+                  updateSchema(data);
                   setModelCommandInputs(ForgeModel, $scope.resourcePath, $scope.id, $scope.schema);
                   onSchemaLoad();
                 }
