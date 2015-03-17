@@ -49,8 +49,8 @@ module Forge {
                   if (stepInputs) {
                     var schema = _.last(stepInputs);
                     if (schema) {
-                      updateSchema(schema);
                       $scope.entity = {};
+                      updateSchema(schema);
                       $scope.inputList.push($scope.entity);
 
                       if (data.canMoveToNextStep) {
@@ -98,6 +98,31 @@ module Forge {
 */
               $scope.previousSchemaJson = json;
               $scope.schema = schema;
+              if ($scope.id === "project-new") {
+                var entity = $scope.entity;
+                // lets hide the target location!
+                var properties = schema.properties || {};
+                var overwrite = properties.overwrite;
+                var catalog = properties.catalog;
+                var targetLocation = properties.targetLocation;
+                if (targetLocation) {
+                  targetLocation.hidden = true;
+                  if (overwrite) {
+                    overwrite.hidden = true;
+                  }
+                  console.log("hiding targetLocation!");
+
+                  // lets default the type
+                  if (!entity.type) {
+                    entity.type = "From Archetype Catalog";
+                  }
+                }
+                if (catalog) {
+                  if (!entity.catalog) {
+                    entity.catalog = "fabric8";
+                  }
+                }
+              }
             }
           }
         }
