@@ -137,12 +137,7 @@ var Forge;
         var builder = HawtioNav.builder();
         var projects = builder.id('forge-projects').href(function () { return UrlHelpers.join(Forge.context, 'projects'); }).title(function () { return 'Projects'; }).build();
         var commands = builder.id('forge-commands').href(function () { return UrlHelpers.join(Forge.context, 'commands'); }).title(function () { return 'Command'; }).build();
-        var mainTab = builder.id('forge').rank(100).defaultPage({
-            rank: 100,
-            isValid: function (yes, no) {
-                yes();
-            }
-        }).href(function () { return Forge.context; }).title(function () { return 'Forge'; }).isValid(function () { return Forge.isForge(workspace); }).tabs(projects, commands).build();
+        var mainTab = builder.id('forge').rank(110).href(function () { return Forge.context; }).title(function () { return 'Forge'; }).isValid(function () { return Forge.isForge(workspace); }).tabs(projects, commands).build();
         HawtioNav.add(mainTab);
         // disable the images page for now...
         var navItems = HawtioNav.items || [];

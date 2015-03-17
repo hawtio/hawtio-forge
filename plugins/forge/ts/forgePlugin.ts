@@ -49,13 +49,7 @@ module Forge {
                       .build();
 
     var mainTab = builder.id('forge')
-                         .rank(100)
-                         .defaultPage({
-                           rank: 100,
-                           isValid: (yes, no) => {
-                             yes();
-                           }
-                         })
+                        .rank(110)
                          .href(() => context)
                          .title(() => 'Forge')
                          .isValid(() => isForge(workspace))
