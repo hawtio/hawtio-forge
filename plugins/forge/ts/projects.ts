@@ -82,7 +82,7 @@ module Forge {
             if (angular.isArray(data) && status === 200) {
               $scope.projects = _.sortBy(data, "name");
               angular.forEach($scope.projects, (project) => {
-                var resourcePath = project.path;
+                var resourcePath = project.user + "/" + project.name;
                 project.$commandsLink = commandsLink(resourcePath);
               });
               if (!$scope.projects || !$scope.projects.length) {

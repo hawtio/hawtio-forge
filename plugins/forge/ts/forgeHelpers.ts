@@ -29,7 +29,7 @@ module Forge {
 
   export function commandsLink(resourcePath) {
     if (resourcePath) {
-      return UrlHelpers.join("/forge/commands", resourcePath);
+      return UrlHelpers.join("/forge/commands/user", resourcePath);
     } else {
       return "/forge/commands";
     }
