@@ -3,7 +3,7 @@
 
 module Forge {
 
-  export var ProjectsController = controller("ProjectsController", ["$scope", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "ForgeApiURL",
+  export var ReposController = controller("ReposController", ["$scope", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "ForgeApiURL",
     ($scope, $dialog, $window, $templateCache, $routeParams, $location:ng.ILocationService, localStorage, $http, $timeout, ForgeApiURL) => {
 
       $scope.resourcePath = $routeParams["path"];
@@ -20,9 +20,14 @@ module Forge {
         },
         columnDefs: [
           {
-            field: 'path',
-            displayName: 'Path',
-            cellTemplate: $templateCache.get("projectTemplate.html")
+            field: 'name',
+            displayName: 'Repository Name',
+            cellTemplate: $templateCache.get("repoTemplate.html")
+          },
+          {
+            field: 'actions',
+            displayName: 'Actions',
+            cellTemplate: $templateCache.get("repoActionsTemplate.html")
           }
         ]
       };
@@ -61,7 +66,7 @@ module Forge {
           log.info("Deleting " + angular.toJson($scope.projects));
           var path = project.path;
           if (path) {
-            var url = projectApiUrl(ForgeApiURL, path);
+            var url = repoApiUrl(ForgeApiURL, path);
             $http.delete(url).
               success(function (data, status, headers, config) {
                 updateData();
@@ -76,14 +81,24 @@ module Forge {
       }
 
       function updateData() {
-        var url = projectsApiUrl(ForgeApiURL);
+        var url = reposApiUrl(ForgeApiURL);
         $http.get(url).
           success(function (data, status, headers, config) {
             if (angular.isArray(data) && status === 200) {
               $scope.projects = _.sortBy(data, "name");
               angular.forEach($scope.projects, (project) => {
-                var resourcePath = project.user + "/" + project.name;
-                project.$commandsLink = commandsLink(resourcePath);
+                var owner = project.owner || {};
+                var user = owner.username || project.user;
+                var name = project.name;
+                var fullName = project.fullName;
+                if (user && name) {
+                  var resourcePath = user + "/" + name;
+                  project.$commandsLink = commandsLink(resourcePath);
+
+                  if (!fullName) {
+                    fullName = resourcePath;
+                  }
+                }
               });
               if (!$scope.projects || !$scope.projects.length) {
                 $location.path("/forge/addProject");

@@ -6,12 +6,30 @@
       {{row.entity.name}}</a>
   </div>
 </script>
-<script type="text/ng-template" id="projectTemplate.html">
+<script type="text/ng-template" id="repoTemplate.html">
   <div class="ngCellText">
-    <a href=""
-       title="Commands for project {{row.entity.path}}"
+    <a title="View repository {{row.entity.name}}"
+       ng-href="/forge/repos/{{row.entity.name}}">
+      {{row.entity.name}}
+    </a>
+  </div>
+</script>
+<script type="text/ng-template" id="repoActionsTemplate.html">
+  <div class="ngCellText">
+    <a ng-show="row.entity.html_url"
+       class="btn btn-default" target="browse"
+       title="Browse project {{row.entity.name}}"
+       ng-href="{{row.entity.html_url}}">
+      <i class="fa fa-external-link"></i>
+      Browse
+    </a>
+    <a ng-show="row.entity.$commandsLink"
+       class="btn btn-default"
+       title="Commands for project {{row.entity.name}}"
        ng-href="{{row.entity.$commandsLink}}">
-      {{row.entity.name}}</a>
+      <i class="fa fa-play-circle"></i>
+      Run...
+    </a>
   </div>
 </script>
 <script type="text/ng-template" id="categoryTemplate.html">

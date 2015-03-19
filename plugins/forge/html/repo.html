@@ -1,0 +1,38 @@
+<div class="row" ng-controller="Forge.RepoController">
+  <div class="row">
+    <div class="col-md-12">
+      <span class="pull-right">&nbsp;</span>
+      <a ng-show="entity.html_url"
+         class="btn btn-default" target="browse"
+         title="Browse project {{entity.name}}"
+         ng-href="{{entity.html_url}}">
+        <i class="fa fa-external-link"></i>
+        Browse
+      </a>
+      <span class="pull-right">&nbsp;</span>
+      <a ng-show="entity.$commandsLink"
+         class="btn btn-default"
+         title="Commands for project {{entity.name}}"
+         ng-href="{{entity.$commandsLink}}">
+        <i class="fa fa-play-circle"></i>
+        Run...
+      </a>
+    </div>
+  </div>
+
+  <div ng-hide="fetched">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="align">
+          <i class="fa fa-spinner fa-spin"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div ng-show="fetched">
+    <div class="row">
+      <div class="col-md-12">
+      </div>
+    </div>
+  </div>
+</div>

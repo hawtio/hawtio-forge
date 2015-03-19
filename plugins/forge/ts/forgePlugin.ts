@@ -9,13 +9,13 @@ module Forge {
 
   _module.config(['$routeProvider', ($routeProvider:ng.route.IRouteProvider) => {
     $routeProvider.when(UrlHelpers.join(context, '/addProject'), route('addProject.html', false))
-                  .when(UrlHelpers.join(context, '/projects/:path*'), route('projects.html', false))
-                  .when(UrlHelpers.join(context, '/projects'), route('projects.html', false))
+                  .when(UrlHelpers.join(context, '/repos/:path*'), route('repos.html', false))
+                  .when(UrlHelpers.join(context, '/repos'), route('repos.html', false))
                   .when(UrlHelpers.join(context, '/commands'), route('commands.html', false))
                   .when(UrlHelpers.join(context, '/commands/:path*'), route('commands.html', false))
                   .when(UrlHelpers.join(context, '/command/:id'), route('command.html', false))
                   .when(UrlHelpers.join(context, '/command/:id/:path*'), route('command.html', false))
-                  .when(context, { redirectTo: UrlHelpers.join(context, 'projects') });
+                  .when(context, { redirectTo: UrlHelpers.join(context, 'repos') });
   }]);
 
   // set up a promise that supplies the API URL for Forge, proxied if necessary
@@ -38,9 +38,9 @@ module Forge {
 
     var builder = HawtioNav.builder();
 
-    var projects = builder.id('forge-projects')
-                      .href(() => UrlHelpers.join(context, 'projects'))
-                      .title(() => 'Projects')
+    var repos = builder.id('forge-repos')
+                      .href(() => UrlHelpers.join(context, 'repos'))
+                      .title(() => 'Repositories')
                       .build();
 
     var commands = builder.id('forge-commands')
@@ -53,7 +53,7 @@ module Forge {
                          .href(() => context)
                          .title(() => 'Forge')
                          .isValid(() => isForge(workspace))
-                         .tabs(projects, commands)
+                         .tabs(repos, commands)
                          .build();
 
     HawtioNav.add(mainTab);

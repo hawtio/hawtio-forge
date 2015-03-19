@@ -35,12 +35,12 @@ module Forge {
     }
   }
 
-  export function projectsApiUrl(ForgeApiURL) {
-    return UrlHelpers.join(ForgeApiURL, "/projects");
+  export function reposApiUrl(ForgeApiURL) {
+    return UrlHelpers.join(ForgeApiURL, "/repos");
   }
 
-  export function projectApiUrl(ForgeApiURL, path) {
-    return UrlHelpers.join(ForgeApiURL, "/projects", path);
+  export function repoApiUrl(ForgeApiURL, path) {
+    return UrlHelpers.join(ForgeApiURL, "/repos", path);
   }
 
   export function commandApiUrl(ForgeApiURL, commandId, resourcePath = null) {

@@ -15,10 +15,10 @@ module Forge {
         $scope.save = () => {
           log.info("Saving " + angular.toJson($scope.project));
           if ($scope.project.path) {
-            var url = projectsApiUrl(ForgeApiURL);
+            var url = reposApiUrl(ForgeApiURL);
             $http.post(url, $scope.project).
               success(function (data, status, headers, config) {
-                $location.path("/forge/projects");
+                $location.path("/forge/repos");
               }).
               error(function (data, status, headers, config) {
                 log.warn("failed to load " + url + ". status: " + status + " data: " + data);
