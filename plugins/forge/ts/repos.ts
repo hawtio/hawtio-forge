@@ -9,6 +9,24 @@ module Forge {
       $scope.resourcePath = $routeParams["path"];
       $scope.commandsLink = commandsLink;
 
+      $scope.login = {
+        authHeader: localStorage["gogsAuthorization"],
+        relogin: false,
+        user: "",
+        password: ""
+      };
+
+      $scope.doLogin = () => {
+        var login = $scope.login;
+        var user = login.user;
+        var password = login.password;
+        if (user && password) {
+          var userPwd = user + ':' + password;
+          login.authHeader = 'Basic ' + (userPwd.encodeBase64());
+          updateData();
+        }
+      };
+
       $scope.tableConfig = {
         data: 'projects',
         showSelectionCheckbox: true,
@@ -81,23 +99,34 @@ module Forge {
       }
 
       function updateData() {
-        var url = reposApiUrl(ForgeApiURL);
-        $http.get(url).
-          success(function (data, status, headers, config) {
-            if (angular.isArray(data) && status === 200) {
-              $scope.projects = _.sortBy(data, "name");
-              angular.forEach($scope.projects, (repo) => {
-                enrichRepo(repo);
-              });
-              if (!$scope.projects || !$scope.projects.length) {
-                $location.path("/forge/addProject");
-              }
-              $scope.fetched = true;
+        var authHeader = $scope.login.authHeader;
+        if (authHeader) {
+          var url = reposApiUrl(ForgeApiURL);
+          var config = {
+            headers: {
+              Authorization: authHeader
             }
-          }).
-          error(function (data, status, headers, config) {
-            log.warn("failed to load " + url + ". status: " + status + " data: " + data);
-          });
+          };
+          $http.get(url, config).
+            success(function (data, status, headers, config) {
+              if (angular.isArray(data) && status === 200) {
+                // lets store a successful login so that we hide the login page
+                localStorage["gogsAuthorization"] = authHeader;
+
+                $scope.projects = _.sortBy(data, "name");
+                angular.forEach($scope.projects, (repo) => {
+                  enrichRepo(repo);
+                });
+                if (!$scope.projects || !$scope.projects.length) {
+                  $location.path("/forge/addProject");
+                }
+                $scope.fetched = true;
+              }
+            }).
+            error(function (data, status, headers, config) {
+              log.warn("failed to load " + url + ". status: " + status + " data: " + data);
+            });
+        }
       }
 
       updateData();

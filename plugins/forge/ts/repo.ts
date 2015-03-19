@@ -19,7 +19,13 @@ module Forge {
         function updateData() {
           if ($scope.name) {
             var url = repoApiUrl(ForgeApiURL, $scope.name);
-            $http.get(url).
+            var authHeader = localStorage["gogsAuthorization"];
+            var config = {
+              headers: {
+                Authorization: authHeader
+              }
+            };
+            $http.get(url, config).
               success(function (data, status, headers, config) {
                 if (data) {
                   enrichRepo(data);
