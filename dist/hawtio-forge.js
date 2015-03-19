@@ -44,7 +44,7 @@ var Forge;
     }
     Forge.reposApiUrl = reposApiUrl;
     function repoApiUrl(ForgeApiURL, path) {
-        return UrlHelpers.join(ForgeApiURL, "/repos", path);
+        return UrlHelpers.join(ForgeApiURL, "/repos/user", path);
     }
     Forge.repoApiUrl = repoApiUrl;
     function commandApiUrl(ForgeApiURL, commandId, resourcePath) {
@@ -109,17 +109,27 @@ var Forge;
         return commandInputs[id] = item;
     }
     Forge.setModelCommandInputs = setModelCommandInputs;
+    function enrichRepo(repo) {
+        var owner = repo.owner || {};
+        var user = owner.username || repo.user;
+        var name = repo.name;
+        if (user && name) {
+            var resourcePath = user + "/" + name;
+            repo.$commandsLink = commandsLink(resourcePath);
+        }
+    }
+    Forge.enrichRepo = enrichRepo;
 })(Forge || (Forge = {}));
 
 /// <reference path="../../includes.ts"/>
 /// <reference path="forgeHelpers.ts"/>
 var Forge;
 (function (Forge) {
-    Forge._module = angular.module(Forge.pluginName, ['hawtio-core', 'hawtio-ui', 'wiki']);
+    Forge._module = angular.module(Forge.pluginName, ['hawtio-core', 'hawtio-ui']);
     Forge.controller = PluginHelpers.createControllerFunction(Forge._module, Forge.pluginName);
     Forge.route = PluginHelpers.createRoutingFunction(Forge.templatePath);
     Forge._module.config(['$routeProvider', function ($routeProvider) {
-        $routeProvider.when(UrlHelpers.join(Forge.context, '/addProject'), Forge.route('addProject.html', false)).when(UrlHelpers.join(Forge.context, '/repos/:path*'), Forge.route('repos.html', false)).when(UrlHelpers.join(Forge.context, '/repos'), Forge.route('repos.html', false)).when(UrlHelpers.join(Forge.context, '/commands'), Forge.route('commands.html', false)).when(UrlHelpers.join(Forge.context, '/commands/:path*'), Forge.route('commands.html', false)).when(UrlHelpers.join(Forge.context, '/command/:id'), Forge.route('command.html', false)).when(UrlHelpers.join(Forge.context, '/command/:id/:path*'), Forge.route('command.html', false)).when(Forge.context, { redirectTo: UrlHelpers.join(Forge.context, 'repos') });
+        $routeProvider.when(UrlHelpers.join(Forge.context, '/addProject'), Forge.route('addProject.html', false)).when(UrlHelpers.join(Forge.context, '/repos/:path*'), Forge.route('repo.html', false)).when(UrlHelpers.join(Forge.context, '/repos'), Forge.route('repos.html', false)).when(UrlHelpers.join(Forge.context, '/commands'), Forge.route('commands.html', false)).when(UrlHelpers.join(Forge.context, '/commands/:path*'), Forge.route('commands.html', false)).when(UrlHelpers.join(Forge.context, '/command/:id'), Forge.route('command.html', false)).when(UrlHelpers.join(Forge.context, '/command/:id/:path*'), Forge.route('command.html', false)).when(Forge.context, { redirectTo: UrlHelpers.join(Forge.context, 'repos') });
     }]);
     // set up a promise that supplies the API URL for Forge, proxied if necessary
     Forge._module.factory('ForgeApiURL', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', function (jolokiaUrl, jolokia, $q, $rootScope) {
@@ -421,28 +431,28 @@ var Forge;
 /// <reference path="forgePlugin.ts"/>
 var Forge;
 (function (Forge) {
-    Forge.ProjectController = Forge.controller("ProjectController", ["$scope", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "ForgeApiURL", function ($scope, $templateCache, $location, $routeParams, $http, $timeout, ForgeApiURL) {
-        $scope.project = {
-            path: ""
-        };
-        $scope.save = function () {
-            Forge.log.info("Saving " + angular.toJson($scope.project));
-            if ($scope.project.path) {
-                var url = Forge.reposApiUrl(ForgeApiURL);
-                $http.post(url, $scope.project).success(function (data, status, headers, config) {
-                    $location.path("/forge/repos");
-                }).error(function (data, status, headers, config) {
-                    Forge.log.warn("failed to load " + url + ". status: " + status + " data: " + data);
-                    var message = "Failed to POST to " + url + " got status: " + status;
-                    Core.notification('error', message);
-                });
-            }
-        };
+    Forge.RepoController = Forge.controller("RepoController", ["$scope", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "ForgeApiURL", function ($scope, $templateCache, $location, $routeParams, $http, $timeout, ForgeApiURL) {
+        $scope.name = $routeParams["path"];
         $scope.$on('$routeUpdate', function ($event) {
             updateData();
         });
         updateData();
         function updateData() {
+            if ($scope.name) {
+                var url = Forge.repoApiUrl(ForgeApiURL, $scope.name);
+                $http.get(url).success(function (data, status, headers, config) {
+                    if (data) {
+                        Forge.enrichRepo(data);
+                    }
+                    $scope.entity = data;
+                    $scope.fetched = true;
+                }).error(function (data, status, headers, config) {
+                    Forge.log.warn("failed to load " + url + ". status: " + status + " data: " + data);
+                });
+            }
+            else {
+                $scope.fetched = true;
+            }
         }
     }]);
 })(Forge || (Forge = {}));
@@ -524,18 +534,8 @@ var Forge;
             $http.get(url).success(function (data, status, headers, config) {
                 if (angular.isArray(data) && status === 200) {
                     $scope.projects = _.sortBy(data, "name");
-                    angular.forEach($scope.projects, function (project) {
-                        var owner = project.owner || {};
-                        var user = owner.username || project.user;
-                        var name = project.name;
-                        var fullName = project.fullName;
-                        if (user && name) {
-                            var resourcePath = user + "/" + name;
-                            project.$commandsLink = Forge.commandsLink(resourcePath);
-                            if (!fullName) {
-                                fullName = resourcePath;
-                            }
-                        }
+                    angular.forEach($scope.projects, function (repo) {
+                        Forge.enrichRepo(repo);
                     });
                     if (!$scope.projects || !$scope.projects.length) {
                         $location.path("/forge/addProject");
@@ -554,5 +554,5 @@ angular.module("hawtio-forge-templates", []).run(["$templateCache", function($te
 $templateCache.put("plugins/forge/html/command.html","<div ng-controller=\"Forge.CommandController\">\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <span class=\"pull-right\">&nbsp;</span>\n      <a class=\"btn btn-default pull-right\"\n              href=\"{{commandsLink}}\"><i class=\"fa fa-list\"></i></a>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <h3>{{schema.info.description}}</h3>\n    </div>\n  </div>\n  <div class=\"row\" ng-show=\"executing\">\n    <div class=\"col-md-12\">\n      <p class=\"bg-info\">executing command...\n        <i class=\"fa fa-spinner fa-spin\"></i>\n      </p>\n    </div>\n  </div>\n  <div class=\"row\" ng-show=\"response\">\n    <div class=\"col-md-12\">\n      <p ng-show=\"response.message\" ng-class=\"responseClass\"><span class=\"response-message\">{{response.message}}</span></p>\n      <p ng-show=\"response.output\" ng-class=\"responseClass\"><span class=\"response-output\">{{response.output}}</span></p>\n      <p ng-show=\"response.err\" ng-class=\"bg-warning\"><span class=\"response-err\">{{response.err}}</span></p>\n    </div>\n  </div>\n  <div class=\"row\" ng-show=\"response.outputProperties.htmlUrl && id == \'project-new\'\">\n    <div class=\"col-md-12\">\n      <p class=\"text-primary\">\n        Created project in a new\n        <a target=\"gitrepo\" href=\"{{response.outputProperties.htmlUrl}}\" title=\"view the newly created git repository for the project\">\n          repository <b>{{response.outputProperties.fullName}}</b>\n        </a>\n      </p>\n    </div>\n  </div>\n  <div class=\"row\" ng-show=\"response\">\n    <div class=\"col-md-12\">\n      <a class=\"btn btn-primary\" href=\"{{commandsLink}}\">Done</a>\n      <a class=\"btn btn-default\" ng-click=\"response = null\">Hide</a>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"fetched\">\n        <div class=\"align-center\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"fetched && !wizardCompleted\">\n        <div simple-form name=\"commandForm\" mode=\'edit\' entity=\'entity\' data=\'schema\'></div>\n      </div>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-2\">\n    </div>\n    <div class=\"col-md-2\">\n      <button class=\"btn btn-primary\"\n              title=\"Perform this command\"\n              ng-click=\"execute()\">\n        Execute\n      </button>\n    </div>\n  </div>\n</div>\n");
 $templateCache.put("plugins/forge/html/commands.html","<div class=\"row\" ng-controller=\"Forge.CommandsController\">\n  <div class=\"row\">\n    <div class=\"col-md-12\" ng-show=\"commands.length\">\n      <span ng-show=\"!id\">\n        Command: <hawtio-filter ng-model=\"tableConfig.filterOptions.filterText\"\n                       css-class=\"input-xxlarge\"\n                       placeholder=\"Filter commands...\"></hawtio-filter>\n      </span>\n      <span class=\"pull-right\" ng-show=\"projectDescription\" title=\"project folder where the commands will be executed\">{{projectDescription}}</span>\n    </div>\n  </div>\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <div ng-hide=\"fetched\">\n        <div class=\"align\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n      <div ng-show=\"fetched\">\n        <div ng-hide=\"commands.length\" class=\"align-center\">\n          <p class=\"alert alert-info\">There are no commands available!</p>\n        </div>\n        <div ng-show=\"commands.length\">\n          <table class=\"table table-condensed table-striped\" hawtio-simple-table=\"tableConfig\"></table>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n");
 $templateCache.put("plugins/forge/html/layoutForge.html","<script type=\"text/ng-template\" id=\"idTemplate.html\">\n  <div class=\"ngCellText\">\n    <a href=\"\"\n       title=\"Execute command {{row.entity.name}}\"\n       ng-href=\"{{row.entity.$link}}\">\n      {{row.entity.name}}</a>\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"repoTemplate.html\">\n  <div class=\"ngCellText\">\n    <a title=\"View repository {{row.entity.name}}\"\n       ng-href=\"/forge/repos/{{row.entity.name}}\">\n      {{row.entity.name}}\n    </a>\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"repoActionsTemplate.html\">\n  <div class=\"ngCellText\">\n    <a ng-show=\"row.entity.html_url\"\n       class=\"btn btn-default\" target=\"browse\"\n       title=\"Browse project {{row.entity.name}}\"\n       ng-href=\"{{row.entity.html_url}}\">\n      <i class=\"fa fa-external-link\"></i>\n      Browse\n    </a>\n    <a ng-show=\"row.entity.$commandsLink\"\n       class=\"btn btn-default\"\n       title=\"Commands for project {{row.entity.name}}\"\n       ng-href=\"{{row.entity.$commandsLink}}\">\n      <i class=\"fa fa-play-circle\"></i>\n      Run...\n    </a>\n  </div>\n</script>\n<script type=\"text/ng-template\" id=\"categoryTemplate.html\">\n  <div class=\"ngCellText\">\n    <span class=\"pod-label badge\"\n          class=\"background-light-grey mouse-pointer\">{{row.entity.category}}</span>\n  </div>\n</script>\n\n<div class=\"row\">\n  <div class=\"wiki-icon-view\">\n    <div class=\"row forge-view\" ng-view></div>\n  </div>\n</div>\n");
-$templateCache.put("plugins/forge/html/repo.html","<div class=\"row\" ng-controller=\"Forge.RepoController\">\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <span class=\"pull-right\">&nbsp;</span>\n      <a ng-show=\"entity.html_url\"\n         class=\"btn btn-default\" target=\"browse\"\n         title=\"Browse project {{entity.name}}\"\n         ng-href=\"{{entity.html_url}}\">\n        <i class=\"fa fa-external-link\"></i>\n        Browse\n      </a>\n      <span class=\"pull-right\">&nbsp;</span>\n      <a ng-show=\"entity.$commandsLink\"\n         class=\"btn btn-default\"\n         title=\"Commands for project {{entity.name}}\"\n         ng-href=\"{{entity.$commandsLink}}\">\n        <i class=\"fa fa-play-circle\"></i>\n        Run...\n      </a>\n    </div>\n  </div>\n\n  <div ng-hide=\"fetched\">\n    <div class=\"row\">\n      <div class=\"col-md-12\">\n        <div class=\"align\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n    </div>\n  </div>\n  <div ng-show=\"fetched\">\n    <div class=\"row\">\n      <div class=\"col-md-12\">\n      </div>\n    </div>\n  </div>\n</div>\n");
+$templateCache.put("plugins/forge/html/repo.html","<div class=\"row\" ng-controller=\"Forge.RepoController\">\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <span class=\"pull-right\">&nbsp;</span>\n      <a ng-show=\"entity.$commandsLink\"\n         class=\"btn btn-default pull-right\"\n         title=\"Commands for project {{entity.name}}\"\n         ng-href=\"{{entity.$commandsLink}}\">\n        <i class=\"fa fa-play-circle\"></i>\n        Run...\n      </a>\n      <span class=\"pull-right\">&nbsp;</span>\n      <a ng-show=\"entity.html_url\"\n         class=\"btn btn-default pull-right\" target=\"browse\"\n         title=\"Browse project {{entity.name}}\"\n         ng-href=\"{{entity.html_url}}\">\n        <i class=\"fa fa-external-link\"></i>\n        Browse\n      </a>\n    </div>\n  </div>\n\n  <div ng-hide=\"fetched\">\n    <div class=\"row\">\n      <div class=\"col-md-12\">\n        <div class=\"align\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n    </div>\n  </div>\n  <div ng-show=\"fetched\">\n    <div class=\"row\">\n      <div class=\"col-md-12\">\n        <h3 title=\"repository for {{entity.owner.username}}\">{{entity.name}}</h3>\n      </div>\n    </div>\n\n    <div class=\"git-clone-tabs\">\n      <div class=\"row\">\n        <div class=\"col-md-12\">\n          <div class=\"tabbable\">\n            <div value=\"ssh\" class=\"tab-pane\" title=\"SSH\" ng-show=\"entity.ssh_url\">\n              <div class=\"git-clone-panel\">\n                <p>to clone this git repository via <b>ssh</b> from the command line:</p>\n              </div>\n\n              <div class=\"highlight\">\n              <pre>\n                <code>git clone {{entity.ssh_url}}</code>\n              </pre>\n              </div>\n            </div>\n\n            <div value=\"http\" class=\"tab-pane\" title=\"HTTP\" ng-show=\"entity.clone_url\">\n              <div class=\"git-clone-panel\">\n                <p>to clone this git repository via <b>http</b> from the command line:</p>\n              </div>\n\n              <div class=\"highlight\">\n              <pre>\n                <code>git clone {{entity.clone_url}}</code>\n              </pre>\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n");
 $templateCache.put("plugins/forge/html/repos.html","<div class=\"row\" ng-controller=\"Forge.ReposController\">\n  <div class=\"row\">\n    <div class=\"col-md-12\">\n      <hawtio-filter ng-model=\"tableConfig.filterOptions.filterText\"\n                     ng-show=\"projects.length\"\n                     css-class=\"input-xxlarge\"\n                     placeholder=\"Filter projects...\"></hawtio-filter>\n      <!--\n            <button class=\"btn btn-primary pull-right\"\n                    ng-click=\"openCommands()\">\n              Commands\n            </button>\n      -->\n      <!--\n            <span class=\"pull-right\">&nbsp;</span>\n            <button ng-show=\"fetched\"\n                    class=\"btn btn-danger pull-right\"\n                    ng-disabled=\"tableConfig.selectedItems.length == 0\"\n                    ng-click=\"delete(tableConfig.selectedItems)\">\n              <i class=\"fa fa-remove\"></i> Delete\n            </button>\n      -->\n      <span class=\"pull-right\">&nbsp;</span>\n      <a class=\"btn btn-default pull-right\" href=\"/forge/command/project-new\"\n         title=\"Create a new project and repository\">\n        <i class=\"fa fa-plus\"></i> Create Project</a>\n      </a>\n    </div>\n  </div>\n\n  <div ng-hide=\"fetched\">\n    <div class=\"row\">\n      <div class=\"col-md-12\">\n        <div class=\"align\">\n          <i class=\"fa fa-spinner fa-spin\"></i>\n        </div>\n      </div>\n    </div>\n  </div>\n  <div ng-show=\"fetched\">\n    <div ng-hide=\"projects.length\" class=\"align-center\">\n      <div class=\"row\">\n        <div class=\"col-md-12\">\n          <p class=\"alert alert-info\">There are no repositories available!</p>\n        </div>\n      </div>\n      <div class=\"row\">\n        <div class=\"col-md-12\">\n          <a class=\"btn btn-default pull-right\" href=\"/forge/command/project-new\"\n             title=\"Create a new project and repository\">\n            <i class=\"fa fa-plus\"></i> Create Project</a>\n          </a>\n        </div>\n      </div>\n    </div>\n    <div ng-show=\"projects.length\">\n      <div class=\"row\">\n        <div class=\"col-md-12\">\n          <table class=\"table table-condensed table-striped\" hawtio-simple-table=\"tableConfig\"></table>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>\n");}]); hawtioPluginLoader.addModule("hawtio-forge-templates");

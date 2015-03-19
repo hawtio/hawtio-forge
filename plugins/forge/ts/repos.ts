@@ -86,19 +86,8 @@ module Forge {
           success(function (data, status, headers, config) {
             if (angular.isArray(data) && status === 200) {
               $scope.projects = _.sortBy(data, "name");
-              angular.forEach($scope.projects, (project) => {
-                var owner = project.owner || {};
-                var user = owner.username || project.user;
-                var name = project.name;
-                var fullName = project.fullName;
-                if (user && name) {
-                  var resourcePath = user + "/" + name;
-                  project.$commandsLink = commandsLink(resourcePath);
-
-                  if (!fullName) {
-                    fullName = resourcePath;
-                  }
-                }
+              angular.forEach($scope.projects, (repo) => {
+                enrichRepo(repo);
               });
               if (!$scope.projects || !$scope.projects.length) {
                 $location.path("/forge/addProject");

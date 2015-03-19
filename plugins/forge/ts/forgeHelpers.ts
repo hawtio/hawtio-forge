@@ -40,7 +40,7 @@ module Forge {
   }
 
   export function repoApiUrl(ForgeApiURL, path) {
-    return UrlHelpers.join(ForgeApiURL, "/repos", path);
+    return UrlHelpers.join(ForgeApiURL, "/repos/user", path);
   }
 
   export function commandApiUrl(ForgeApiURL, commandId, resourcePath = null) {
@@ -105,6 +105,16 @@ module Forge {
   export function setModelCommandInputs(ForgeModel, resourcePath, id, item) {
     var commandInputs = modelCommandInputMap(ForgeModel, resourcePath);
     return commandInputs[id] = item;
+  }
+
+  export function enrichRepo(repo) {
+    var owner = repo.owner || {};
+    var user = owner.username || repo.user;
+    var name = repo.name;
+    if (user && name) {
+      var resourcePath = user + "/" + name;
+      repo.$commandsLink = commandsLink(resourcePath);
+    }
   }
 
 }

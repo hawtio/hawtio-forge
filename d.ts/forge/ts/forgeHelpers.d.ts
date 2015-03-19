@@ -20,4 +20,5 @@ declare module Forge {
     function getModelCommands(ForgeModel: any, resourcePath: any): any;
     function getModelCommandInputs(ForgeModel: any, resourcePath: any, id: any): any;
     function setModelCommandInputs(ForgeModel: any, resourcePath: any, id: any, item: any): any;
+    function enrichRepo(repo: any): void;
 }
