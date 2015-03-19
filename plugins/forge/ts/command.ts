@@ -14,7 +14,11 @@ module Forge {
         $scope.id = $routeParams["id"];
         $scope.path = $routeParams["path"];
 
-        $scope.commandsLink = commandsLink($scope.resourcePath);
+        $scope.commandsLink = ($scope.path || $scope.id  === 'project-new')
+          ? "/forge/repos" : commandsLink($scope.resourcePath);
+
+        console.log("command page created");
+
         $scope.entity = {
         };
         $scope.inputList = [$scope.entity];
@@ -23,6 +27,9 @@ module Forge {
         onSchemaLoad();
 
         $scope.$on('$routeUpdate', ($event) => {
+          console.log("route updated; lets clear the entity");
+          $scope.entity = {
+          };
           updateData();
         });
 

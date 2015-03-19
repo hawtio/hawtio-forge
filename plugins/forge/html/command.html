@@ -13,7 +13,7 @@
   </div>
   <div class="row" ng-show="executing">
     <div class="col-md-12">
-      <p class="bg-info">executing command...
+      <p class="bg-info">executing...
         <i class="fa fa-spinner fa-spin"></i>
       </p>
     </div>
@@ -38,7 +38,7 @@
   <div class="row" ng-show="response">
     <div class="col-md-12">
       <a class="btn btn-primary" href="{{commandsLink}}">Done</a>
-      <a class="btn btn-default" ng-click="response = null">Hide</a>
+      <a class="btn btn-default" ng-click="response = null" ng-hide="wizardCompleted">Hide</a>
     </div>
   </div>
   <div class="row">
@@ -53,7 +53,7 @@
       </div>
     </div>
   </div>
-  <div class="row">
+  <div class="row" ng-hide="wizardCompleted">
     <div class="col-md-2">
     </div>
     <div class="col-md-2">
