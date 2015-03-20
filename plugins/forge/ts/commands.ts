@@ -13,6 +13,8 @@ module Forge {
         $scope.projectDescription = "/" + $scope.projectDescription;
       }
 
+      redirectToGogsLoginIfRequired($location);
+
       $scope.commands = getModelCommands(ForgeModel, $scope.resourcePath);
       $scope.fetched = $scope.commands.length !== 0;
 

@@ -10,6 +10,8 @@ module Forge {
 
         $scope.name = $routeParams["path"];
 
+        redirectToGogsLoginIfRequired($location);
+
         $scope.$on('$routeUpdate', ($event) => {
           updateData();
         });
@@ -19,12 +21,7 @@ module Forge {
         function updateData() {
           if ($scope.name) {
             var url = repoApiUrl(ForgeApiURL, $scope.name);
-            var authHeader = localStorage["gogsAuthorization"];
-            var config = {
-              headers: {
-                Authorization: authHeader
-              }
-            };
+            var config = createHttpConfig();
             $http.get(url, config).
               success(function (data, status, headers, config) {
                 if (data) {

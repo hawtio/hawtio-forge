@@ -10,10 +10,11 @@ module Forge {
       $scope.commandsLink = commandsLink;
 
       $scope.login = {
-        authHeader: localStorage["gogsAuthorization"],
+        authHeader: localStorage["gogsAuthorization"] || "",
         relogin: false,
-        user: "",
-        password: ""
+        user: localStorage["gogsUser"] || "",
+        password: "",
+        email: localStorage["gogsEmail"] || ""
       };
 
       $scope.doLogin = () => {
@@ -25,6 +26,13 @@ module Forge {
           login.authHeader = 'Basic ' + (userPwd.encodeBase64());
           updateData();
         }
+      };
+
+      $scope.logout = () => {
+        delete localStorage["gogsAuthorization"];
+        $scope.login.authHeader = null;
+        $scope.login.loggedIn = false;
+        $scope.login.failed = false;
       };
 
       $scope.tableConfig = {
@@ -100,31 +108,39 @@ module Forge {
 
       function updateData() {
         var authHeader = $scope.login.authHeader;
+        var email = $scope.login.email || "";
         if (authHeader) {
           var url = reposApiUrl(ForgeApiURL);
           var config = {
             headers: {
-              Authorization: authHeader
+              Authorization: authHeader,
+              Email: email
             }
           };
           $http.get(url, config).
             success(function (data, status, headers, config) {
+              $scope.login.failed = false;
+              $scope.login.loggedIn = true;
               if (angular.isArray(data) && status === 200) {
                 // lets store a successful login so that we hide the login page
                 localStorage["gogsAuthorization"] = authHeader;
+                localStorage["gogsEmail"] = email;
+                localStorage["gogsUser"] = $scope.login.user || "";
 
                 $scope.projects = _.sortBy(data, "name");
                 angular.forEach($scope.projects, (repo) => {
                   enrichRepo(repo);
                 });
-                if (!$scope.projects || !$scope.projects.length) {
-                  $location.path("/forge/addProject");
-                }
                 $scope.fetched = true;
               }
             }).
             error(function (data, status, headers, config) {
-              log.warn("failed to load " + url + ". status: " + status + " data: " + data);
+              if (status === 403) {
+                $scope.logout();
+                $scope.login.failed = true;
+              } else {
+                log.warn("failed to load " + url + ". status: " + status + " data: " + data);
+              }
             });
         }
       }

@@ -117,4 +117,26 @@ module Forge {
     }
   }
 
+  export function createHttpConfig() {
+    var authHeader = localStorage["gogsAuthorization"];
+    var email = localStorage["gogsEmail"];
+    var config = {
+      headers: {
+        Authorization: authHeader,
+        Email: email
+      }
+    };
+    return config;
+  }
+
+  export function isLoggedIntoGogs() {
+    var config = createHttpConfig();
+    return config.headers.Authorization ? true : false;
+  }
+
+  export function redirectToGogsLoginIfRequired($location, loginPage = "/forge/repos") {
+    if (!isLoggedIntoGogs()) {
+      $location.path(loginPage)
+    }
+  }
 }

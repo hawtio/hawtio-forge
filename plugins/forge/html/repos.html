@@ -21,36 +21,58 @@
             </button>
       -->
       <span class="pull-right">&nbsp;</span>
+      <a class="btn btn-default pull-right" ng-click="logout()" ng-show="login.loggedIn"
+         title="Log out from the git repository">
+        <i class="fa fa-sign-out"></i> Log out</a>
+      </a>
+      <span class="pull-right">&nbsp;</span>
       <a class="btn btn-default pull-right" href="/forge/command/project-new"
+         ng-show="login.loggedIn"
          title="Create a new project and repository">
         <i class="fa fa-plus"></i> Create Project</a>
       </a>
     </div>
   </div>
 
+
   <div ng-show="!login.authHeader || login.relogin">
+    <div ng-show="login.failed">
+      <div class="bg-danger">
+        <div class="invalid-login align-center">
+          <h3>Invalid login/password. Please try again!</h3>
+        </div>
+      </div>
+    </div>
+    <h2 ng-hide="login.failed">Please login to the git repository</h2>
+
     <form>
       <div class="form-group">
         <label for="gitUsername">User name</label>
-        <input type="text" class="form-control" id="gitUsername" placeholder="Enter user name" ng-model="login.user">
+        <input type="text" class="form-control" id="gitUsername" placeholder="Enter user name" required="true"
+               ng-model="login.user">
       </div>
       <div class="form-group">
         <label for="gitPassword">Password</label>
-        <input type="password" class="form-control" id="gitPassword" placeholder="Password" ng-model="login.password">
+        <input type="password" class="form-control" id="gitPassword" placeholder="Password" required="true"
+               ng-model="login.password">
       </div>
       <div class="form-group">
-         <label for="gitEmail">Email address</label>
-         <input type="email" class="form-control" id="gitEmail" placeholder="Enter email">
-       </div>
+        <label for="gitEmail">Email address</label>
+        <input type="email" class="form-control" id="gitEmail" placeholder="Enter email" required="true"
+               ng-model="login.email">
+      </div>
 
-      <button type="submit" class="btn btn-primary" ng-click="doLogin()">Login to Gogs</button>
+      <button type="submit" class="btn btn-primary" ng-click="doLogin()"
+              ng-disabled="!login.user || !login.password || !login.email">
+        <i class="fa fa-sign-in"></i> Login
+      </button>
     </form>
   </div>
 
   <div ng-hide="fetched || !login.authHeader || login.relogin">
     <div class="row">
       <div class="col-md-12">
-        <div class="align">
+        <div class="align-center">
           <i class="fa fa-spinner fa-spin"></i>
         </div>
       </div>
@@ -59,17 +81,11 @@
 
   <div ng-show="fetched && login.authHeader">
     <div ng-hide="projects.length" class="align-center">
-      <div class="row">
-        <div class="col-md-12">
-          <p class="alert alert-info">There are no repositories available!</p>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-12">
-          <a class="btn btn-default pull-right" href="/forge/command/project-new"
-             title="Create a new project and repository">
-            <i class="fa fa-plus"></i> Create Project</a>
-          </a>
+      <div class="padded-div">
+        <div class="row">
+          <div class="col-md-12">
+            <p class="alert alert-info">There are no git repositories yet. Please create one!</p>
+          </div>
         </div>
       </div>
     </div>

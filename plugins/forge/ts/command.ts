@@ -19,6 +19,8 @@ module Forge {
 
         console.log("command page created");
 
+        redirectToGogsLoginIfRequired($location);
+
         $scope.entity = {
         };
         $scope.inputList = [$scope.entity];
