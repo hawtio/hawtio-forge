@@ -33,7 +33,7 @@ Then to run the web application:
 gulp
 ```
 
-The build talks to the [Fabric8 Forge REST Service](https://github.com/fabric8io/fabric8/tree/master/forge/rest-core)
+The build talks to the [Fabric8 Forge REST Service](https://github.com/fabric8io/fabric8/tree/master/forge/fabric8-forge)
 
 #### Install the bower package
 
