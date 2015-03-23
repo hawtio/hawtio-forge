@@ -7,7 +7,7 @@ module Forge {
     ($scope, $dialog, $window, $templateCache, $routeParams, $location:ng.ILocationService, localStorage, $http, $timeout, ForgeApiURL, ForgeModel) => {
 
       $scope.model = ForgeModel;
-      $scope.resourcePath = $routeParams["path"] || $location.search()["path"];
+      $scope.resourcePath = $routeParams["path"] || $location.search()["path"] || "";
       $scope.repoName = "";
       $scope.projectDescription = $scope.resourcePath || "";
       var pathSteps = $scope.projectDescription.split("/");

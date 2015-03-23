@@ -424,7 +424,7 @@ var Forge;
 (function (Forge) {
     Forge.CommandsController = Forge.controller("CommandsController", ["$scope", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "ForgeApiURL", "ForgeModel", function ($scope, $dialog, $window, $templateCache, $routeParams, $location, localStorage, $http, $timeout, ForgeApiURL, ForgeModel) {
         $scope.model = ForgeModel;
-        $scope.resourcePath = $routeParams["path"] || $location.search()["path"];
+        $scope.resourcePath = $routeParams["path"] || $location.search()["path"] || "";
         $scope.repoName = "";
         $scope.projectDescription = $scope.resourcePath || "";
         var pathSteps = $scope.projectDescription.split("/");
