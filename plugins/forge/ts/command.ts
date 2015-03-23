@@ -10,7 +10,7 @@ module Forge {
 
         $scope.model = ForgeModel;
 
-        $scope.resourcePath = $routeParams["path"] || $location.search()["path"];
+        $scope.resourcePath = $routeParams["path"] || $location.search()["path"] || "";
         $scope.id = $routeParams["id"];
         $scope.path = $routeParams["path"];
 

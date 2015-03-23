@@ -204,7 +204,7 @@ var Forge;
 (function (Forge) {
     Forge.CommandController = Forge.controller("CommandController", ["$scope", "$templateCache", "$location", "$routeParams", "$http", "$timeout", "ForgeApiURL", "ForgeModel", function ($scope, $templateCache, $location, $routeParams, $http, $timeout, ForgeApiURL, ForgeModel) {
         $scope.model = ForgeModel;
-        $scope.resourcePath = $routeParams["path"] || $location.search()["path"];
+        $scope.resourcePath = $routeParams["path"] || $location.search()["path"] || "";
         $scope.id = $routeParams["id"];
         $scope.path = $routeParams["path"];
         $scope.avatar_url = localStorage["gogsAvatarUrl"];
