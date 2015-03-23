@@ -47,7 +47,7 @@ module Forge {
             inputList: $scope.inputList
           };
           log.info("About to post to " + url + " payload: " + angular.toJson(request));
-          $http.post(url, request).
+          $http.post(url, request, createHttpConfig()).
             success(function (data, status, headers, config) {
               $scope.executing = false;
               if (data) {
@@ -158,7 +158,7 @@ module Forge {
           };
           //log.info("About to post to " + url + " payload: " + angular.toJson(request));
           $scope.validating = true;
-          $http.post(url, request).
+          $http.post(url, request, createHttpConfig()).
             success(function (data, status, headers, config) {
               this.validation = data;
               //console.log("got validation " + angular.toJson(data, true));
@@ -205,7 +205,7 @@ module Forge {
           if (commandId) {
             var resourcePath = $scope.resourcePath;
             var url = commandInputApiUrl(ForgeApiURL, commandId, resourcePath);
-            $http.get(url).
+            $http.get(url, createHttpConfig()).
               success(function (data, status, headers, config) {
                 if (data) {
                   $scope.fetched = true;

@@ -2,6 +2,9 @@
   <div class="row">
     <div class="col-md-12">
       <span class="pull-right">&nbsp;</span>
+      <a class="btn btn-default pull-right"
+              href="/forge/repos"><i class="fa fa-list"></i></a>
+      <span class="pull-right">&nbsp;</span>
       <a ng-show="entity.$commandsLink"
          class="btn btn-default pull-right"
          title="Commands for project {{entity.name}}"
@@ -32,7 +35,19 @@
   <div ng-show="fetched">
     <div class="row">
       <div class="col-md-12">
-        <h3 title="repository for {{entity.owner.username}}">{{entity.name}}</h3>
+        <h3 title="repository for {{entity.owner.username}}">
+          <span ng-show="entity.owner.username">
+            <a href="/forge/repos" title="Browse the repositories for {{entity.owner.username}}">
+              <img src="{{entity.owner.avatar_url}}" class="avatar-small-img" ng-show="entity.owner.avatar_url">
+            </a>
+            &nbsp;
+            <a href="/forge/repos" title="Browse the repositories for {{entity.owner.username}}">
+              {{entity.owner.username}}
+            </a>
+             &nbsp;/&nbsp;
+          </span>
+          {{entity.name}}
+        </h3>
       </div>
     </div>
 

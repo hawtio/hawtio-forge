@@ -111,6 +111,11 @@ module Forge {
     var owner = repo.owner || {};
     var user = owner.username || repo.user;
     var name = repo.name;
+    var avatar_url = owner.avatar_url;
+    if (avatar_url && avatar_url.startsWith("http//")) {
+      avatar_url = "http://" + avatar_url.substring(6);
+      owner.avatar_url = avatar_url;
+    }
     if (user && name) {
       var resourcePath = user + "/" + name;
       repo.$commandsLink = commandsLink(resourcePath);

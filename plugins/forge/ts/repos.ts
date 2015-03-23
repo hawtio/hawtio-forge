@@ -12,6 +12,7 @@ module Forge {
       $scope.login = {
         authHeader: localStorage["gogsAuthorization"] || "",
         relogin: false,
+        avatar_url: localStorage["gogsAvatarUrl"] || "",
         user: localStorage["gogsUser"] || "",
         password: "",
         email: localStorage["gogsEmail"] || ""
@@ -121,6 +122,7 @@ module Forge {
             success(function (data, status, headers, config) {
               $scope.login.failed = false;
               $scope.login.loggedIn = true;
+              var avatar_url = null;
               if (angular.isArray(data) && status === 200) {
                 // lets store a successful login so that we hide the login page
                 localStorage["gogsAuthorization"] = authHeader;
@@ -130,6 +132,13 @@ module Forge {
                 $scope.projects = _.sortBy(data, "name");
                 angular.forEach($scope.projects, (repo) => {
                   enrichRepo(repo);
+                  if (!avatar_url) {
+                    avatar_url = Core.pathGet(repo, ["owner", "avatar_url"]);
+                    if (avatar_url) {
+                      $scope.login.avatar_url = avatar_url;
+                      localStorage["gogsAvatarUrl"] = avatar_url;
+                    }
+                  }
                 });
                 $scope.fetched = true;
               }

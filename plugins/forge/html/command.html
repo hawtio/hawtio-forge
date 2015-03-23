@@ -3,6 +3,7 @@
     <div class="col-md-12">
       <span class="pull-right">&nbsp;</span>
       <a class="btn btn-default pull-right"
+         title="Browse the repositories"
               href="{{commandsLink}}"><i class="fa fa-list"></i></a>
     </div>
   </div>
@@ -59,6 +60,8 @@
     <div class="col-md-2">
       <button class="btn btn-primary"
               title="Perform this command"
+              ng-show="fetched"
+              ng-disabled="executing"
               ng-click="execute()">
         Execute
       </button>

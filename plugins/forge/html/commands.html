@@ -6,7 +6,21 @@
                        css-class="input-xxlarge"
                        placeholder="Filter commands..."></hawtio-filter>
       </span>
-      <span class="pull-right" ng-show="projectDescription" title="project folder where the commands will be executed">{{projectDescription}}</span>
+      <span class="pull-right">&nbsp;</span>
+      <div class="user-icon-name pull-right" ng-show="user">
+        <a href="/forge/repos" title="Browse the repositories for {{user}}">
+          <img src="{{avatar_url}}" class="avatar-small-img" ng-show="avatar_url">
+        </a>
+        &nbsp;
+        <a href="/forge/repos" title="Browse the repositories for {{user}}">
+          {{user}}
+        </a>
+        <span ng-show="repoName">/
+          <a href="/forge/repos/{{repoName}}" title="Browse the {{repoName}}repository">
+            {{repoName}}
+          </a>
+        </span>
+      </div>
     </div>
   </div>
   <div class="row">

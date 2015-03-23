@@ -24,3 +24,15 @@
     padding-top: 20px;
     padding-bottom: 10px;
 }
+
+.user-icon-name {
+    padding-top: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-weight: bolder;
+}
+
+.avatar-small-img {
+    height: 24px;
+    width: 24px;
+}
