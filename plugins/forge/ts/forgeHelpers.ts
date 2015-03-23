@@ -134,6 +134,14 @@ module Forge {
     return config;
   }
 
+  export function commandMatchesText(command, filterText) {
+    if (filterText) {
+      return Core.matchFilterIgnoreCase(angular.toJson(command), filterText);
+    } else {
+      return true;
+    }
+  }
+
   export function isLoggedIntoGogs() {
     var config = createHttpConfig();
     return config.headers.Authorization ? true : false;

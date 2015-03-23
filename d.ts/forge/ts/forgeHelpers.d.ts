@@ -27,6 +27,7 @@ declare module Forge {
             Email: any;
         };
     };
+    function commandMatchesText(command: any, filterText: any): any;
     function isLoggedIntoGogs(): boolean;
     function redirectToGogsLoginIfRequired($location: any, loginPage?: string): void;
 }
