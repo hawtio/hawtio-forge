@@ -14,6 +14,14 @@ module Forge {
         $scope.id = $routeParams["id"];
         $scope.path = $routeParams["path"];
 
+        $scope.avatar_url = localStorage["gogsAvatarUrl"];
+        $scope.user = localStorage["gogsUser"];
+        $scope.repoName = "";
+        var pathSteps = $scope.resourcePath.split("/");
+        if (pathSteps && pathSteps.length) {
+          $scope.repoName = pathSteps[pathSteps.length - 1];
+        }
+
         $scope.commandsLink = ($scope.path || $scope.id  === 'project-new')
           ? "/forge/repos" : commandsLink($scope.resourcePath);
 
