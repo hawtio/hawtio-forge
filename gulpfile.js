@@ -133,10 +133,12 @@ gulp.task('connect', ['watch'], function() {
     }
   });
 
+  var localForgeHost = process.env.LOCAL_FORGE_HOST || "localhost";
+
   var localProxies = [{
         proto: "http",
-        port: "8599",
-        hostname: "localhost",
+        port: "8080",
+        hostname: localForgeHost,
         path: '/api',
         targetPath: "/api"
       }];
