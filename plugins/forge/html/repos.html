@@ -66,11 +66,20 @@
         <input type="email" class="form-control" id="gitEmail" placeholder="Enter email" required="true"
                ng-model="login.email">
       </div>
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary" ng-click="doLogin()"
+                ng-disabled="!login.user || !login.password || !login.email">
+          <i class="fa fa-sign-in"></i> Sign In
+        </button>
+      </div>
 
-      <button type="submit" class="btn btn-primary" ng-click="doLogin()"
-              ng-disabled="!login.user || !login.password || !login.email">
-        <i class="fa fa-sign-in"></i> Login
-      </button>
+      <div class="form-group" ng-show="forgotPasswordUrl">
+          <a href="{{forgotPasswordUrl}}">Forgot password?</a>
+      </div>
+
+      <div class="form-group" ng-show="signUpUrl">
+        <a href="{{signUpUrl}}">Need an account? Sign up now.</a>
+      </div>
     </form>
   </div>
 

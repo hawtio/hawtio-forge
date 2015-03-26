@@ -3,11 +3,17 @@
 
 module Forge {
 
-  export var ReposController = controller("ReposController", ["$scope", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "ForgeApiURL",
-    ($scope, $dialog, $window, $templateCache, $routeParams, $location:ng.ILocationService, localStorage, $http, $timeout, ForgeApiURL) => {
+  export var ReposController = controller("ReposController", ["$scope", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "ForgeApiURL", "ServiceRegistry",
+    ($scope, $dialog, $window, $templateCache, $routeParams, $location:ng.ILocationService, localStorage, $http, $timeout, ForgeApiURL, ServiceRegistry) => {
 
       $scope.resourcePath = $routeParams["path"];
       $scope.commandsLink = commandsLink;
+
+      var gogsUrl = ServiceRegistry.serviceLink("gogs-http-service");
+      if (gogsUrl) {
+        $scope.signUpUrl = UrlHelpers.join(gogsUrl, "user/sign_up");
+        $scope.forgotPasswordUrl = UrlHelpers.join(gogsUrl, "user/forget_password");
+      }
 
       $scope.login = {
         authHeader: localStorage["gogsAuthorization"] || "",

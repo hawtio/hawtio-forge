@@ -22,6 +22,19 @@ module Forge {
     return "/api/forge"
   }]);
 
+  _module.factory('ServiceRegistry', [() => {
+    return {
+      hasService: (serviceName: string) => "gogs-http-service" === serviceName,
+      serviceLink: (serviceName: string) => {
+        if (serviceName === "gogs-http-service") {
+          return "http://gogs.dummy.local";
+        } else {
+          return null;
+        }
+      }
+    };
+  }]);
+
   _module.factory('ForgeModel', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', (jolokiaUrl:string, jolokia:Jolokia.IJolokia, $q:ng.IQService, $rootScope:ng.IRootScopeService) => {
     return {
       rootProject: {

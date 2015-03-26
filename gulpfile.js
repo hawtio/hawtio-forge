@@ -134,10 +134,12 @@ gulp.task('connect', ['watch'], function() {
   });
 
   var localForgeHost = process.env.LOCAL_FORGE_HOST || "localhost";
+  var localForgePort = "8080";
+  console.log("Connecting to local fabric8 forge on http://" + localForgeHost + ":" + localForgePort);
 
   var localProxies = [{
         proto: "http",
-        port: "8080",
+        port: localForgePort,
         hostname: localForgeHost,
         path: '/api',
         targetPath: "/api"
