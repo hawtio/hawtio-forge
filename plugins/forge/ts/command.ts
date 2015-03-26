@@ -36,12 +36,18 @@ module Forge {
         $scope.schema = getModelCommandInputs(ForgeModel, $scope.resourcePath, $scope.id);
         onSchemaLoad();
 
-        $scope.$on('$routeUpdate', ($event) => {
+        function onRouteChanged() {
           console.log("route updated; lets clear the entity");
           $scope.entity = {
           };
+          $scope.inputList = [$scope.entity];
+          $scope.previousSchemaJson = "";
+          $scope.schema = null;
+          Core.$apply($scope);
           updateData();
-        });
+        }
+
+        $scope.$on('$routeChangeSuccess', onRouteChanged);
 
         $scope.execute = () => {
           // TODO check if valid...
@@ -108,13 +114,10 @@ module Forge {
             });
             var json = angular.toJson(schemaWithoutValues);
             if (json !== $scope.previousSchemaJson) {
-/*
-              console.log("updating schema");
-              console.log("old: " + $scope.previousSchemaJson);
-              console.log("new: " + json);
-*/
+              console.log("updated schema: " + json);
               $scope.previousSchemaJson = json;
               $scope.schema = schema;
+
               if ($scope.id === "project-new") {
                 var entity = $scope.entity;
                 // lets hide the target location!
