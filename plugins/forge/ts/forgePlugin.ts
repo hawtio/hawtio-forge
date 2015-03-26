@@ -55,17 +55,12 @@ module Forge {
                       .title(() => 'Repositories')
                       .build();
 
-    var commands = builder.id('forge-commands')
-                      .href(() => UrlHelpers.join(context, 'commands'))
-                      .title(() => 'Command')
-                      .build();
-
     var mainTab = builder.id('forge')
                         .rank(110)
                          .href(() => context)
                          .title(() => 'Forge')
                          .isValid(() => isForge(workspace))
-                         .tabs(repos, commands)
+                         .tabs(repos)
                          .build();
 
     HawtioNav.add(mainTab);
