@@ -119,6 +119,7 @@ module Forge {
     if (user && name) {
       var resourcePath = user + "/" + name;
       repo.$commandsLink = commandsLink(resourcePath);
+      repo.$buildsLink = "/kubernetes/builds?q=/" + resourcePath + ".git";
     }
   }
 

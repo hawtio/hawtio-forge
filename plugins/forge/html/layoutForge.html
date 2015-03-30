@@ -23,6 +23,13 @@
       <i class="fa fa-external-link"></i>
       Browse
     </a>
+    <a ng-show="row.entity.$buildsLink"
+       class="btn btn-default" target="builds"
+       title="View builds for this repository {{row.entity.owner.username}}/{{row.entity.name}}"
+       ng-href="{{row.entity.$buildsLink}}">
+      <i class="fa fa-cog"></i>
+      Builds
+    </a>
     <a ng-show="row.entity.$commandsLink"
        class="btn btn-default"
        title="Commands for project {{row.entity.name}}"

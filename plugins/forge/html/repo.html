@@ -12,6 +12,14 @@
         <i class="fa fa-play-circle"></i>
         Run...
       </a>
+      <span class="pull-right" ng-show="entity.$buildsLink">&nbsp;</span>
+      <a ng-show="entity.$buildsLink"
+         class="btn btn-primary pull-right" target="builds"
+         title="View builds for this repository {{entity.owner.username}}/{{entity.name}}"
+         ng-href="{{entity.$buildsLink}}">
+        <i class="fa fa-cog"></i>
+        Builds
+      </a>
       <span class="pull-right">&nbsp;</span>
       <a ng-show="entity.html_url"
          class="btn btn-default pull-right" target="browse"
