@@ -129,7 +129,10 @@ module Forge {
               $scope.login.failed = false;
               $scope.login.loggedIn = true;
               var avatar_url = null;
-              if (angular.isArray(data) && status === 200) {
+              if (status === 200) {
+                if (!data || !angular.isArray(data)) {
+                  data = [];
+                }
                 // lets store a successful login so that we hide the login page
                 localStorage["gogsAuthorization"] = authHeader;
                 localStorage["gogsEmail"] = email;
