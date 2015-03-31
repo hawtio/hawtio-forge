@@ -153,10 +153,9 @@ module Forge {
               }
             }).
             error(function (data, status, headers, config) {
-              if (status === 403) {
-                $scope.logout();
-                $scope.login.failed = true;
-              } else {
+              $scope.logout();
+              $scope.login.failed = true;
+              if (status !== 403) {
                 log.warn("failed to load " + url + ". status: " + status + " data: " + data);
               }
             });
