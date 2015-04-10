@@ -120,6 +120,25 @@ module Forge {
       var resourcePath = user + "/" + name;
       repo.$commandsLink = commandsLink(resourcePath);
       repo.$buildsLink = "/kubernetes/builds?q=/" + resourcePath + ".git";
+      var injector = HawtioCore.injector;
+      if (injector) {
+        var ServiceRegistry = injector.get("ServiceRegistry");
+        if (ServiceRegistry) {
+          var orionLink = ServiceRegistry.serviceLink("orion");
+          var gogsService = ServiceRegistry.findService("gogs-http-service");
+          if (orionLink && gogsService) {
+            var portalIp = gogsService.portalIP;
+            if (portalIp) {
+              var port = gogsService.port;
+              var portText = (port && port !== 80) ? ":" + port : "";
+              var gitCloneUrl = UrlHelpers.join("http://" + portalIp + portText + "/", resourcePath + ".git");
+
+              repo.$openProjectLink = UrlHelpers.join(orionLink,
+                "/git/git-repository.html#,createProject.name=" + name + ",cloneGit=" + gitCloneUrl);
+            }
+          }
+        }
+      }
     }
   }
 

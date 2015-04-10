@@ -16,12 +16,19 @@
 </script>
 <script type="text/ng-template" id="repoActionsTemplate.html">
   <div class="ngCellText">
+    <a ng-show="row.entity.$openProjectLink"
+       class="btn btn-primary" target="editor"
+       title="Open project {{row.entity.name}} in an editor"
+       ng-href="{{row.entity.$openProjectLink}}">
+      <i class="fa fa-pencil-square"></i>
+      Open
+    </a>
     <a ng-show="row.entity.html_url"
        class="btn btn-default" target="browse"
        title="Browse project {{row.entity.name}}"
        ng-href="{{row.entity.html_url}}">
       <i class="fa fa-external-link"></i>
-      Browse
+      Repository
     </a>
     <a ng-show="row.entity.$buildsLink"
        class="btn btn-default" target="builds"
