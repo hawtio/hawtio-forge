@@ -194,6 +194,7 @@ var Forge;
     Forge._module.factory('ServiceRegistry', [function () {
         return {
             hasService: function (serviceName) { return "gogs-http-service" === serviceName; },
+            findService: function (serviceName) { return null; },
             serviceLink: function (serviceName) {
                 if (serviceName === "gogs-http-service") {
                     return "http://gogs.dummy.local";

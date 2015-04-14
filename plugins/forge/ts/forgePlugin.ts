@@ -25,6 +25,7 @@ module Forge {
   _module.factory('ServiceRegistry', [() => {
     return {
       hasService: (serviceName: string) => "gogs-http-service" === serviceName,
+      findService: (serviceName: string) => null,
       serviceLink: (serviceName: string) => {
         if (serviceName === "gogs-http-service") {
           return "http://gogs.dummy.local";
