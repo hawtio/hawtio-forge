@@ -131,7 +131,7 @@ module Forge {
             if (portalIp) {
               var port = gogsService.port;
               var portText = (port && port !== 80) ? ":" + port : "";
-              var gitCloneUrl = UrlHelpers.join("http://" + portalIp + portText + "/", resourcePath + ".git");
+              var gitCloneUrl = UrlHelpers.join("https://" + portalIp + portText + "/", resourcePath + ".git");
 
               repo.$openProjectLink = UrlHelpers.join(orionLink,
                 "/git/git-repository.html#,createProject.name=" + name + ",cloneGit=" + gitCloneUrl);
