@@ -11,6 +11,8 @@ module Forge {
 
   export var defaultIconUrl = Core.url("/img/forge.svg");
 
+  export var gogsServiceName = "gogs";
+  export var orionServiceName = "orion";
 
   export function isForge(workspace) {
     return true;
@@ -124,8 +126,8 @@ module Forge {
       if (injector) {
         var ServiceRegistry = injector.get("ServiceRegistry");
         if (ServiceRegistry) {
-          var orionLink = ServiceRegistry.serviceLink("orion");
-          var gogsService = ServiceRegistry.findService("gogs-http-service");
+          var orionLink = ServiceRegistry.serviceLink(orionServiceName);
+          var gogsService = ServiceRegistry.findService(gogsServiceName);
           if (orionLink && gogsService) {
             var portalIp = gogsService.portalIP;
             if (portalIp) {

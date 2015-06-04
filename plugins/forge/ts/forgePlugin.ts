@@ -24,11 +24,11 @@ module Forge {
 
   _module.factory('ServiceRegistry', [() => {
     return {
-      hasService: (serviceName: string) => "gogs-http-service" === serviceName,
+      hasService: (serviceName: string) => gogsServiceName === serviceName,
       findService: (serviceName: string) => null,
       serviceLink: (serviceName: string) => {
-        if (serviceName === "gogs-http-service") {
-          return "http://gogs.dummy.local";
+        if (serviceName === gogsServiceName) {
+          return "http://gogs.vagrant.local";
         } else {
           return null;
         }

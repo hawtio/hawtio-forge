@@ -14,6 +14,8 @@ var Forge;
     Forge.templatePath = Forge.pluginPath + 'html/';
     Forge.log = Logger.get(Forge.pluginName);
     Forge.defaultIconUrl = Core.url("/img/forge.svg");
+    Forge.gogsServiceName = "gogs";
+    Forge.orionServiceName = "orion";
     function isForge(workspace) {
         return true;
     }
@@ -126,8 +128,8 @@ var Forge;
             if (injector) {
                 var ServiceRegistry = injector.get("ServiceRegistry");
                 if (ServiceRegistry) {
-                    var orionLink = ServiceRegistry.serviceLink("orion");
-                    var gogsService = ServiceRegistry.findService("gogs-http-service");
+                    var orionLink = ServiceRegistry.serviceLink(Forge.orionServiceName);
+                    var gogsService = ServiceRegistry.findService(Forge.gogsServiceName);
                     if (orionLink && gogsService) {
                         var portalIp = gogsService.portalIP;
                         if (portalIp) {
@@ -194,11 +196,11 @@ var Forge;
     }]);
     Forge._module.factory('ServiceRegistry', [function () {
         return {
-            hasService: function (serviceName) { return "gogs-http-service" === serviceName; },
+            hasService: function (serviceName) { return Forge.gogsServiceName === serviceName; },
             findService: function (serviceName) { return null; },
             serviceLink: function (serviceName) {
-                if (serviceName === "gogs-http-service") {
-                    return "http://gogs.dummy.local";
+                if (serviceName === Forge.gogsServiceName) {
+                    return "http://gogs.vagrant.local";
                 }
                 else {
                     return null;
@@ -641,7 +643,7 @@ var Forge;
     Forge.ReposController = Forge.controller("ReposController", ["$scope", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "ForgeApiURL", "ServiceRegistry", function ($scope, $dialog, $window, $templateCache, $routeParams, $location, localStorage, $http, $timeout, ForgeApiURL, ServiceRegistry) {
         $scope.resourcePath = $routeParams["path"];
         $scope.commandsLink = Forge.commandsLink;
-        var gogsUrl = ServiceRegistry.serviceLink("gogs-http-service");
+        var gogsUrl = ServiceRegistry.serviceLink(Forge.gogsServiceName);
         if (gogsUrl) {
             $scope.signUpUrl = UrlHelpers.join(gogsUrl, "user/sign_up");
             $scope.forgotPasswordUrl = UrlHelpers.join(gogsUrl, "user/forget_password");

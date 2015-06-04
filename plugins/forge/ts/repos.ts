@@ -9,7 +9,7 @@ module Forge {
       $scope.resourcePath = $routeParams["path"];
       $scope.commandsLink = commandsLink;
 
-      var gogsUrl = ServiceRegistry.serviceLink("gogs-http-service");
+      var gogsUrl = ServiceRegistry.serviceLink(gogsServiceName);
       if (gogsUrl) {
         $scope.signUpUrl = UrlHelpers.join(gogsUrl, "user/sign_up");
         $scope.forgotPasswordUrl = UrlHelpers.join(gogsUrl, "user/forget_password");
