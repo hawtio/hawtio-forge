@@ -36,6 +36,13 @@ module Forge {
     };
   }]);
 
+  _module.factory('userDetails', [() => {
+    // dummy login
+    return {
+      token: "12345678"
+    };
+  }]);
+
   _module.factory('ForgeModel', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', (jolokiaUrl:string, jolokia:Jolokia.IJolokia, $q:ng.IQService, $rootScope:ng.IRootScopeService) => {
     return {
       rootProject: {

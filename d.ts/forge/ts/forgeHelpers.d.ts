@@ -7,6 +7,8 @@ declare module Forge {
     var templatePath: string;
     var log: Logging.Logger;
     var defaultIconUrl: string;
+    var gogsServiceName: string;
+    var orionServiceName: string;
     function isForge(workspace: any): boolean;
     function commandLink(name: any, resourcePath: any): string;
     function commandsLink(resourcePath: any): string;
