@@ -208,12 +208,6 @@ var Forge;
             }
         };
     }]);
-    Forge._module.factory('userDetails', [function () {
-        // dummy login
-        return {
-            token: "12345678"
-        };
-    }]);
     Forge._module.factory('ForgeModel', ['jolokiaUrl', 'jolokia', '$q', '$rootScope', function (jolokiaUrl, jolokia, $q, $rootScope) {
         return {
             rootProject: {},
@@ -646,7 +640,7 @@ var Forge;
 /// <reference path="forgePlugin.ts"/>
 var Forge;
 (function (Forge) {
-    Forge.ReposController = Forge.controller("ReposController", ["$scope", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "ForgeApiURL", "ServiceRegistry", "userDetails", function ($scope, $dialog, $window, $templateCache, $routeParams, $location, localStorage, $http, $timeout, ForgeApiURL, ServiceRegistry, userDetails) {
+    Forge.ReposController = Forge.controller("ReposController", ["$scope", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "ForgeApiURL", "ServiceRegistry", function ($scope, $dialog, $window, $templateCache, $routeParams, $location, localStorage, $http, $timeout, ForgeApiURL, ServiceRegistry) {
         $scope.resourcePath = $routeParams["path"];
         $scope.commandsLink = Forge.commandsLink;
         var gogsUrl = ServiceRegistry.serviceLink(Forge.gogsServiceName);
@@ -748,14 +742,10 @@ var Forge;
             var email = $scope.login.email || "";
             if (authHeader) {
                 var url = Forge.reposApiUrl(ForgeApiURL);
-                var access_token = (userDetails || {}).token;
-                if (access_token) {
-                    url += "?access_token=" + access_token;
-                }
                 var config = {
                     headers: {
-                        Authorization: authHeader,
-                        Email: email
+                        GogsAuthorization: authHeader,
+                        GogsEmail: email
                     }
                 };
                 $http.get(url, config).success(function (data, status, headers, config) {

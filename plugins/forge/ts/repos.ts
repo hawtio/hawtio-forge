@@ -3,8 +3,8 @@
 
 module Forge {
 
-  export var ReposController = controller("ReposController", ["$scope", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "ForgeApiURL", "ServiceRegistry", "userDetails",
-    ($scope, $dialog, $window, $templateCache, $routeParams, $location:ng.ILocationService, localStorage, $http, $timeout, ForgeApiURL, ServiceRegistry, userDetails) => {
+  export var ReposController = controller("ReposController", ["$scope", "$dialog", "$window", "$templateCache", "$routeParams", "$location", "localStorage", "$http", "$timeout", "ForgeApiURL", "ServiceRegistry",
+    ($scope, $dialog, $window, $templateCache, $routeParams, $location:ng.ILocationService, localStorage, $http, $timeout, ForgeApiURL, ServiceRegistry) => {
 
       $scope.resourcePath = $routeParams["path"];
       $scope.commandsLink = commandsLink;
@@ -118,14 +118,10 @@ module Forge {
         var email = $scope.login.email || "";
         if (authHeader) {
           var url = reposApiUrl(ForgeApiURL);
-          var access_token = (userDetails || {}).token;
-          if (access_token) {
-            url += "?access_token=" + access_token;
-          }
           var config = {
             headers: {
-              Authorization: authHeader,
-              Email: email
+              GogsAuthorization: authHeader,
+              GogsEmail: email
             }
           };
           $http.get(url, config).
