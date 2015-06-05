@@ -149,12 +149,31 @@ module Forge {
     var authHeader = localStorage["gogsAuthorization"];
     var email = localStorage["gogsEmail"];
     var config = {
+/*
       headers: {
         Authorization: authHeader,
         Email: email
       }
+*/
     };
     return config;
+  }
+
+  function addQueryArgument(url, name, value) {
+    if (url && name && value) {
+      var sep =  (url.indexOf("?") >= 0) ? "&" : "?";
+      return url + sep +  name + "=" + encodeURIComponent(value);
+    }
+    return url;
+  }
+
+  export function createHttpUrl(url, authHeader = null, email = null) {
+    authHeader = authHeader || localStorage["gogsAuthorization"];
+    email = email || localStorage["gogsEmail"];
+
+    url = addQueryArgument(url, "_gogsAuth", authHeader);
+    url = addQueryArgument(url, "_gogsEmail", email);
+    return url;
   }
 
   export function commandMatchesText(command, filterText) {
@@ -166,8 +185,12 @@ module Forge {
   }
 
   export function isLoggedIntoGogs() {
+    var authHeader = localStorage["gogsAuthorization"];
+    return authHeader ? true : false;
+/*
     var config = createHttpConfig();
     return config.headers.Authorization ? true : false;
+*/
   }
 
   export function redirectToGogsLoginIfRequired($location, loginPage = "/forge/repos") {

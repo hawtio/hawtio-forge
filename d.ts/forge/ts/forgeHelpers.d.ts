@@ -23,12 +23,8 @@ declare module Forge {
     function getModelCommandInputs(ForgeModel: any, resourcePath: any, id: any): any;
     function setModelCommandInputs(ForgeModel: any, resourcePath: any, id: any, item: any): any;
     function enrichRepo(repo: any): void;
-    function createHttpConfig(): {
-        headers: {
-            Authorization: any;
-            Email: any;
-        };
-    };
+    function createHttpConfig(): {};
+    function createHttpUrl(url: any, authHeader?: any, email?: any): any;
     function commandMatchesText(command: any, filterText: any): any;
     function isLoggedIntoGogs(): boolean;
     function redirectToGogsLoginIfRequired($location: any, loginPage?: string): void;

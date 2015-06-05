@@ -118,11 +118,14 @@ module Forge {
         var email = $scope.login.email || "";
         if (authHeader) {
           var url = reposApiUrl(ForgeApiURL);
+          url = createHttpUrl(url, authHeader, email);
           var config = {
+/*
             headers: {
               GogsAuthorization: authHeader,
               GogsEmail: email
             }
+*/
           };
           $http.get(url, config).
             success(function (data, status, headers, config) {

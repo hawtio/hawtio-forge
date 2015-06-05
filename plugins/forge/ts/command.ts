@@ -60,6 +60,7 @@ module Forge {
             resource: resourcePath,
             inputList: $scope.inputList
           };
+          url = createHttpUrl(url);
           log.info("About to post to " + url + " payload: " + angular.toJson(request));
           $http.post(url, request, createHttpConfig()).
             success(function (data, status, headers, config) {
@@ -167,6 +168,7 @@ module Forge {
             resource: resourcePath,
             inputList: $scope.inputList
           };
+          url = createHttpUrl(url);
           //log.info("About to post to " + url + " payload: " + angular.toJson(request));
           $scope.validating = true;
           $http.post(url, request, createHttpConfig()).
@@ -216,6 +218,7 @@ module Forge {
           if (commandId) {
             var resourcePath = $scope.resourcePath;
             var url = commandInputApiUrl(ForgeApiURL, commandId, resourcePath);
+            url = createHttpUrl(url);
             $http.get(url, createHttpConfig()).
               success(function (data, status, headers, config) {
                 if (data) {

@@ -148,15 +148,27 @@ var Forge;
     function createHttpConfig() {
         var authHeader = localStorage["gogsAuthorization"];
         var email = localStorage["gogsEmail"];
-        var config = {
-            headers: {
-                Authorization: authHeader,
-                Email: email
-            }
-        };
+        var config = {};
         return config;
     }
     Forge.createHttpConfig = createHttpConfig;
+    function addQueryArgument(url, name, value) {
+        if (url && name && value) {
+            var sep = (url.indexOf("?") >= 0) ? "&" : "?";
+            return url + sep + name + "=" + encodeURIComponent(value);
+        }
+        return url;
+    }
+    function createHttpUrl(url, authHeader, email) {
+        if (authHeader === void 0) { authHeader = null; }
+        if (email === void 0) { email = null; }
+        authHeader = authHeader || localStorage["gogsAuthorization"];
+        email = email || localStorage["gogsEmail"];
+        url = addQueryArgument(url, "_gogsAuth", authHeader);
+        url = addQueryArgument(url, "_gogsEmail", email);
+        return url;
+    }
+    Forge.createHttpUrl = createHttpUrl;
     function commandMatchesText(command, filterText) {
         if (filterText) {
             return Core.matchFilterIgnoreCase(angular.toJson(command), filterText);
@@ -167,8 +179,12 @@ var Forge;
     }
     Forge.commandMatchesText = commandMatchesText;
     function isLoggedIntoGogs() {
-        var config = createHttpConfig();
-        return config.headers.Authorization ? true : false;
+        var authHeader = localStorage["gogsAuthorization"];
+        return authHeader ? true : false;
+        /*
+            var config = createHttpConfig();
+            return config.headers.Authorization ? true : false;
+        */
     }
     Forge.isLoggedIntoGogs = isLoggedIntoGogs;
     function redirectToGogsLoginIfRequired($location, loginPage) {
@@ -276,6 +292,7 @@ var Forge;
                 resource: resourcePath,
                 inputList: $scope.inputList
             };
+            url = Forge.createHttpUrl(url);
             Forge.log.info("About to post to " + url + " payload: " + angular.toJson(request));
             $http.post(url, request, Forge.createHttpConfig()).success(function (data, status, headers, config) {
                 $scope.executing = false;
@@ -376,6 +393,7 @@ var Forge;
                 resource: resourcePath,
                 inputList: $scope.inputList
             };
+            url = Forge.createHttpUrl(url);
             //log.info("About to post to " + url + " payload: " + angular.toJson(request));
             $scope.validating = true;
             $http.post(url, request, Forge.createHttpConfig()).success(function (data, status, headers, config) {
@@ -419,6 +437,7 @@ var Forge;
             if (commandId) {
                 var resourcePath = $scope.resourcePath;
                 var url = Forge.commandInputApiUrl(ForgeApiURL, commandId, resourcePath);
+                url = Forge.createHttpUrl(url);
                 $http.get(url, Forge.createHttpConfig()).success(function (data, status, headers, config) {
                     if (data) {
                         $scope.fetched = true;
@@ -555,6 +574,7 @@ var Forge;
             }
         };
         var url = UrlHelpers.join(ForgeApiURL, "commands", $scope.resourcePath);
+        url = Forge.createHttpUrl(url);
         Forge.log.info("Fetching commands from: " + url);
         $http.get(url, Forge.createHttpConfig()).success(function (data, status, headers, config) {
             if (angular.isArray(data) && status === 200) {
@@ -618,6 +638,7 @@ var Forge;
         function updateData() {
             if ($scope.name) {
                 var url = Forge.repoApiUrl(ForgeApiURL, $scope.name);
+                url = Forge.createHttpUrl(url);
                 var config = Forge.createHttpConfig();
                 $http.get(url, config).success(function (data, status, headers, config) {
                     if (data) {
@@ -742,12 +763,8 @@ var Forge;
             var email = $scope.login.email || "";
             if (authHeader) {
                 var url = Forge.reposApiUrl(ForgeApiURL);
-                var config = {
-                    headers: {
-                        GogsAuthorization: authHeader,
-                        GogsEmail: email
-                    }
-                };
+                url = Forge.createHttpUrl(url, authHeader, email);
+                var config = {};
                 $http.get(url, config).success(function (data, status, headers, config) {
                     $scope.login.failed = false;
                     $scope.login.loggedIn = true;
