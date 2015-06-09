@@ -16,6 +16,7 @@ var Forge;
     Forge.defaultIconUrl = Core.url("/img/forge.svg");
     Forge.gogsServiceName = "gogs";
     Forge.orionServiceName = "orion";
+    Forge.loggedInToGogs = false;
     function isForge(workspace) {
         return true;
     }
@@ -180,7 +181,7 @@ var Forge;
     Forge.commandMatchesText = commandMatchesText;
     function isLoggedIntoGogs() {
         var authHeader = localStorage["gogsAuthorization"];
-        return authHeader ? true : false;
+        return authHeader ? Forge.loggedInToGogs : false;
         /*
             var config = createHttpConfig();
             return config.headers.Authorization ? true : false;
@@ -692,6 +693,7 @@ var Forge;
             $scope.login.authHeader = null;
             $scope.login.loggedIn = false;
             $scope.login.failed = false;
+            Forge.loggedInToGogs = false;
         };
         $scope.tableConfig = {
             data: 'projects',
@@ -768,6 +770,7 @@ var Forge;
                 $http.get(url, config).success(function (data, status, headers, config) {
                     $scope.login.failed = false;
                     $scope.login.loggedIn = true;
+                    Forge.loggedInToGogs = true;
                     var avatar_url = null;
                     if (status === 200) {
                         if (!data || !angular.isArray(data)) {

@@ -14,6 +14,8 @@ module Forge {
   export var gogsServiceName = "gogs";
   export var orionServiceName = "orion";
 
+  export var loggedInToGogs = false;
+
   export function isForge(workspace) {
     return true;
   }
@@ -186,7 +188,7 @@ module Forge {
 
   export function isLoggedIntoGogs() {
     var authHeader = localStorage["gogsAuthorization"];
-    return authHeader ? true : false;
+    return authHeader ? loggedInToGogs : false;
 /*
     var config = createHttpConfig();
     return config.headers.Authorization ? true : false;

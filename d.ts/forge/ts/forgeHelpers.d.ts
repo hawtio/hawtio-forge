@@ -9,6 +9,7 @@ declare module Forge {
     var defaultIconUrl: string;
     var gogsServiceName: string;
     var orionServiceName: string;
+    var loggedInToGogs: boolean;
     function isForge(workspace: any): boolean;
     function commandLink(name: any, resourcePath: any): string;
     function commandsLink(resourcePath: any): string;

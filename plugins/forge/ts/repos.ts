@@ -40,6 +40,7 @@ module Forge {
         $scope.login.authHeader = null;
         $scope.login.loggedIn = false;
         $scope.login.failed = false;
+        loggedInToGogs = false;
       };
 
       $scope.tableConfig = {
@@ -131,6 +132,7 @@ module Forge {
             success(function (data, status, headers, config) {
               $scope.login.failed = false;
               $scope.login.loggedIn = true;
+              loggedInToGogs = true;
               var avatar_url = null;
               if (status === 200) {
                 if (!data || !angular.isArray(data)) {
