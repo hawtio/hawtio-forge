@@ -112,7 +112,7 @@ gulp.task('connect', ['watch'], function() {
   // lets disable unauthorised TLS issues with kube REST API
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-  var forge = uri((process.env.FORGE_REST_URL || 'https://localhost:8588'));
+  var forge = uri((process.env.FORGE_REST_URL || 'https://localhost:8080'));
   console.log("Connecting to Forge on: " + forge);
 
   var staticAssets = [{
@@ -205,6 +205,3 @@ gulp.task('site', ['clean', 'build'], function() {
 });
 
 gulp.task('default', ['connect']);
-
-
-
