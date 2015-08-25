@@ -323,6 +323,13 @@ var Forge;
                 $scope.response = data;
                 var status = ((data || {}).status || "").toString().toLowerCase();
                 $scope.responseClass = toBackgroundStyle(status);
+                var fullName = ((data || {}).outputProperties || {}).fullName;
+                if ($scope.response && fullName && $scope.id === 'project-new') {
+                    // lets forward to the devops edit page
+                    var editPath = UrlHelpers.join("/forge/command/devops-edit/user", fullName);
+                    Forge.log.info("Moving to the devops edit path: " + editPath);
+                    $location.path(editPath);
+                }
                 Core.$apply($scope);
             }).error(function (data, status, headers, config) {
                 $scope.executing = false;
