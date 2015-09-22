@@ -53,6 +53,8 @@ module Forge {
           // TODO check if valid...
           $scope.response = null;
           $scope.executing = true;
+          $scope.invalid = false;
+          $scope.validationError = null;
           var commandId = $scope.id;
           var resourcePath = $scope.resourcePath;
           var url = executeCommandApiUrl(ForgeApiURL, commandId);
@@ -65,10 +67,25 @@ module Forge {
           $http.post(url, request, createHttpConfig()).
             success(function (data, status, headers, config) {
               $scope.executing = false;
+              $scope.invalid = false;
+              $scope.validationError = null;
               if (data) {
                 data.message = data.message || data.output;
                 var wizardResults = data.wizardResults;
                 if (wizardResults) {
+                  angular.forEach(wizardResults.stepValidations, (validation) => {
+                    if (!$scope.invalid && !validation.valid) {
+                      var messages = validation.messages || [];
+                      if (messages.length) {
+                        var message = messages[0];
+                        if (message) {
+                          $scope.invalid = true;
+                          $scope.validationError = message.description;
+                          $scope.validationInput = message.inputName;
+                        }
+                      }
+                    }
+                  });
                   var stepInputs = wizardResults.stepInputs;
                   if (stepInputs) {
                     var schema = _.last(stepInputs);
@@ -88,17 +105,19 @@ module Forge {
                   }
                 }
               }
-              $scope.response = data;
-              var status = ((data || {}).status || "").toString().toLowerCase();
-              $scope.responseClass = toBackgroundStyle(status);
+              if (!$scope.invalid) {
+                $scope.response = data;
+                var status = ((data || {}).status || "").toString().toLowerCase();
+                $scope.responseClass = toBackgroundStyle(status);
 
-              var fullName = ((data || {}).outputProperties || {}).fullName;
-              if ($scope.response && fullName && $scope.id  === 'project-new') {
-
-                // lets forward to the devops edit page
-                var editPath = UrlHelpers.join("/forge/command/devops-edit/user", fullName);
-                log.info("Moving to the devops edit path: " + editPath);
-                $location.path(editPath);
+                var fullName = ((data || {}).outputProperties || {}).fullName;
+                if ($scope.response && fullName && $scope.id === 'project-new') {
+                  $scope.response = null;
+                  // lets forward to the devops edit page
+                  var editPath = UrlHelpers.join("/forge/command/devops-edit/user", fullName);
+                  log.info("Moving to the devops edit path: " + editPath);
+                  $location.path(editPath);
+                }
               }
               Core.$apply($scope);
             }).
