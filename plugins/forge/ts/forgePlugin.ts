@@ -10,6 +10,7 @@ module Forge {
   _module.config(['$routeProvider', ($routeProvider:ng.route.IRouteProvider) => {
     $routeProvider.when(UrlHelpers.join(context, '/repos/:path*'), route('repo.html', false))
                   .when(UrlHelpers.join(context, '/repos'), route('repos.html', false))
+                  .when(UrlHelpers.join(context, '/createProject'), route('createProject.html', false))
                   .when(UrlHelpers.join(context, '/commands'), route('commands.html', false))
                   .when(UrlHelpers.join(context, '/commands/:path*'), route('commands.html', false))
                   .when(UrlHelpers.join(context, '/command/:id'), route('command.html', false))
